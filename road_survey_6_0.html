@@ -1,1203 +1,503 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Alliance Road Survey Pro 6.0</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #22263a;
-    --border: #2e3348;
-    --accent: #3b82f6;
-    --accent2: #10b981;
-    --warn: #f59e0b;
-    --danger: #ef4444;
-    --cyan: #06b6d4;
-    --text: #e2e8f0;
-    --text2: #94a3b8;
-    --text3: #64748b;
-    --radius: 10px;
-    --font: 'Inter', sans-serif;
-    --mono: 'JetBrains Mono', monospace;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-
-  /* ─── LOGIN ─── */
-  #loginScreen {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-height: 100vh; padding: 24px;
-    background: radial-gradient(ellipse at 50% 0%, #1a2a4a 0%, var(--bg) 70%);
-  }
-  .login-card {
-    width: 100%; max-width: 380px;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 16px; padding: 36px 28px;
-  }
-  .login-logo { text-align: center; margin-bottom: 28px; }
-  .login-logo .icon { font-size: 42px; display: block; margin-bottom: 8px; }
-  .login-logo h1 { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
-  .login-logo p { font-size: 12px; color: var(--text2); margin-top: 4px; }
-  .login-card label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .login-card .field { margin-bottom: 16px; }
-  .login-card input { width: 100%; padding: 11px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 15px; font-family: var(--font); outline: none; transition: border-color 0.2s; }
-  .login-card input:focus { border-color: var(--accent); }
-  .btn-login { width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
-  .btn-login:hover { background: #2563eb; }
-  #loginError { color: var(--danger); font-size: 13px; text-align: center; margin-top: 12px; display: none; }
-
-  /* ─── MAIN APP ─── */
-  #mainApp { display: none; flex-direction: column; height: 100vh; }
-
-  /* ─── HEADER ─── */
-  .app-header {
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0; z-index: 200;
-  }
-  .app-header .left { display: flex; align-items: center; gap: 10px; }
-  .app-header .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); animation: pulse-dot 2s infinite; }
-  @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
-  .app-header h2 { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
-  .road-badge { font-size: 11px; color: var(--text2); background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 2px 8px; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .gps-pill {
-    font-family: var(--mono); font-size: 10px; padding: 4px 9px; border-radius: 20px;
-    border: 1px solid var(--border); background: var(--bg); display: flex; align-items: center; gap: 5px;
-  }
-  .gps-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
-  .gps-dot.good { background: var(--accent2); box-shadow: 0 0 6px #10b981; }
-  .gps-dot.ok { background: var(--warn); }
-  .gps-dot.bad { background: var(--danger); }
-
-  /* ─── NAV TABS ─── */
-  .nav-bar {
-    display: flex; background: var(--surface); border-bottom: 1px solid var(--border);
-    flex-shrink: 0; overflow-x: auto; scrollbar-width: none;
-  }
-  .nav-bar::-webkit-scrollbar { display: none; }
-  .nav-tab {
-    flex: 1; min-width: 70px; padding: 11px 8px; text-align: center; cursor: pointer;
-    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px;
-    color: var(--text3); border-bottom: 2px solid transparent; white-space: nowrap;
-    transition: all 0.2s;
-  }
-  .nav-tab .tab-icon { display: block; font-size: 18px; margin-bottom: 2px; }
-  .nav-tab:hover { color: var(--text2); background: var(--surface2); }
-  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--surface2); }
-
-  /* ─── PANELS ─── */
-  .panels-wrap { flex: 1; overflow: hidden; position: relative; }
-  .panel { display: none; height: 100%; overflow-y: auto; padding: 14px 14px 80px; }
-  .panel.active { display: block; }
-  .panel::-webkit-scrollbar { width: 4px; }
-  .panel::-webkit-scrollbar-track { background: transparent; }
-  .panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  /* ─── CARDS ─── */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
-  .card-title { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-
-  /* ─── STATUS BAR ─── */
-  .status-bar {
-    display: flex; align-items: center; gap: 8px; padding: 10px 13px;
-    border-radius: var(--radius); margin-bottom: 12px; font-size: 13px; font-weight: 500;
-    border: 1px solid var(--border); background: var(--surface2);
-    transition: all 0.3s;
-  }
-  .status-bar.standby { border-color: var(--border); }
-  .status-bar.tracking { border-color: var(--accent2); background: rgba(16,185,129,0.08); color: var(--accent2); }
-  .status-bar.error { border-color: var(--danger); background: rgba(239,68,68,0.08); color: var(--danger); }
-  .status-bar.warn { border-color: var(--warn); background: rgba(245,158,11,0.08); color: var(--warn); }
-  .status-icon { font-size: 16px; flex-shrink: 0; }
-
-  /* ─── METRICS ROW ─── */
-  .metrics-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
-  .metric-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 8px; text-align: center; }
-  .metric-val { font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--text); display: block; }
-  .metric-lbl { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; display: block; }
-
-  /* ─── ACCURACY METER ─── */
-  .accuracy-bar-wrap { margin-bottom: 12px; }
-  .accuracy-bar-track { height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; margin-top: 5px; }
-  .accuracy-bar-fill { height: 100%; width: 0%; border-radius: 3px; transition: width 0.5s, background 0.5s; background: var(--accent2); }
-
-  /* ─── BUTTONS ─── */
-  .btn { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: var(--font); }
-  .btn + .btn { margin-top: 8px; }
-  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover:not(:disabled) { background: #2563eb; }
-  .btn-stop { background: var(--danger); color: #fff; }
-  .btn-stop:hover:not(:disabled) { background: #dc2626; }
-  .btn-success { background: var(--accent2); color: #fff; }
-  .btn-success:hover:not(:disabled) { background: #059669; }
-  .btn-warn { background: var(--warn); color: #000; }
-  .btn-warn:hover:not(:disabled) { background: #d97706; }
-  .btn-cyan { background: var(--cyan); color: #000; }
-  .btn-cyan:hover:not(:disabled) { background: #0891b2; color:#fff; }
-  .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .btn-ghost:hover:not(:disabled) { background: var(--border); }
-  .btn-sm { padding: 8px 12px; font-size: 12px; width: auto; }
-
-  /* ─── INPUTS ─── */
-  .form-field { margin-bottom: 12px; }
-  .form-field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
-  .form-field input, .form-field select, .form-field textarea {
-    width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; color: var(--text); font-size: 14px; font-family: var(--font); outline: none;
-    transition: border-color 0.2s;
-  }
-  .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: var(--accent); }
-  .form-field select option { background: var(--surface); }
-  .form-field textarea { resize: vertical; min-height: 70px; }
-  input[type="file"] { display: none; }
-
-  /* ─── MAP ─── */
-  #mapPanel1 { height: 42vh; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); margin-bottom: 12px; }
-
-  /* ─── TOWER CROSSCHECK ─── */
-  .tower-list { max-height: 160px; overflow-y: auto; }
-  .tower-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 10px; border-radius: 7px; background: var(--bg); border: 1px solid var(--border);
-    margin-bottom: 6px; font-size: 12px;
-  }
-  .tower-item .t-name { font-weight: 600; color: var(--text); }
-  .tower-item .t-dist { font-family: var(--mono); font-size: 11px; color: var(--text2); }
-  .tower-item .t-bearing { color: var(--warn); font-size: 10px; }
-  .tower-item .t-type { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
-  .tower-item .t-type.cell { background: rgba(59,130,246,0.15); color: var(--accent); }
-  .tower-item .t-type.tower { background: rgba(245,158,11,0.15); color: var(--warn); }
-  .tower-item .t-type.ref { background: rgba(16,185,129,0.15); color: var(--accent2); }
-
-  /* ─── ROAD CORRECTION ─── */
-  .correction-controls { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-  .point-log { max-height: 200px; overflow-y: auto; }
-  .point-row {
-    display: flex; align-items: center; gap: 8px; padding: 7px 10px;
-    border-bottom: 1px solid var(--border); font-size: 12px; font-family: var(--mono);
-  }
-  .point-row:last-child { border-bottom: none; }
-  .point-row .pt-num { color: var(--text3); min-width: 30px; }
-  .point-row .pt-coord { flex: 1; color: var(--text2); }
-  .point-row .pt-type { font-size: 9px; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; }
-  .pt-type.route { background: rgba(59,130,246,0.15); color: var(--accent); }
-  .pt-type.manual { background: rgba(239,68,68,0.15); color: var(--danger); }
-  .pt-type.photo { background: rgba(245,158,11,0.15); color: var(--warn); }
-
-  /* ─── PHOTO FILE BTN ─── */
-  .photo-label {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 12px; border-radius: 8px; background: var(--warn); color: #000;
-    font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font);
-    transition: background 0.2s;
-  }
-  .photo-label:hover { background: #d97706; }
-
-  /* ─── EXPORT SECTION ─── */
-  .export-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-  /* ─── NOTIFICATIONS ─── */
-  #toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: var(--surface); border: 1px solid var(--border); color: var(--text);
-    padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 500;
-    z-index: 9999; white-space: nowrap; transition: transform 0.3s;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  }
-  #toast.show { transform: translateX(-50%) translateY(0); }
-
-  /* ─── MISC ─── */
-  .divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
-  .section-gap { margin-bottom: 10px; }
-
-  /* ─── LEAFLET DARK OVERRIDE ─── */
-  .leaflet-container { background: #12151e; }
-  .leaflet-popup-content-wrapper { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 10px; }
-  .leaflet-popup-tip { background: var(--surface); }
-  .leaflet-control-zoom a { background: var(--surface2) !important; color: var(--text) !important; border-color: var(--border) !important; }
-  .leaflet-bar { border: 1px solid var(--border) !important; }
-
-  /* ─── PANEL 4 (KML/Settings) ─── */
-  .kml-preview { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-family: var(--mono); font-size: 10px; color: var(--text2); max-height: 120px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
-
-  .signal-bars { display: flex; align-items: flex-end; gap: 2px; height: 18px; }
-  .signal-bar { width: 4px; border-radius: 2px; background: var(--border); }
-  .signal-bar.lit { background: var(--accent2); }
-
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alliance Road Survey Smart-Tool</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; text-align: center; }
+        .login-screen { padding: 20px; max-width: 400px; margin: 50px auto; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .main-app { display: none; }
+        
+        /* Navigation Tabs */
+        .nav-bar { display: flex; background: #333; position: sticky; top: 0; z-index: 1000; }
+        .nav-tab { flex: 1; padding: 15px 10px; color: white; cursor: pointer; font-weight: bold; font-size: 14px; text-transform: uppercase; border-bottom: 3px solid transparent; }
+        .nav-tab.active { background: #007BFF; border-bottom: 3px solid #fff; }
+        
+        .panel { display: none; padding: 15px; max-width: 600px; margin: 0 auto; }
+        .panel.active { display: block; }
+        
+        h2 { color: #333; margin-top: 5px; }
+        input, select, textarea { width: 92%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; }
+        button { width: 96%; padding: 12px; margin-top: 8px; font-size: 16px; cursor: pointer; background: #007BFF; color: white; border: none; border-radius: 5px; font-weight: bold; }
+        button:disabled { background: #ccc; }
+        
+        .stop-btn { background: #DC3545; }
+        .manual-btn { background: #17A2B8; }
+        .custom-file-upload { display: block; padding: 12px; cursor: pointer; background: #FFC107; color: black; border-radius: 5px; font-size: 16px; margin: 8px auto; font-weight: bold; width: 90%; }
+        input[type="file"] { display: none; }
+        
+        #map { height: 45vh; width: 100%; margin-top: 10px; border: 2px solid #ddd; border-radius: 5px; }
+        .info-box { background: #e9ecef; padding: 10px; border-radius: 5px; text-align: left; font-size: 14px; margin-bottom: 10px; }
+        .form-group { text-align: left; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .form-group label { font-weight: bold; color: #444; }
+        .export-excel { background: #28A745; margin-top: 15px; }
+        .status-text { font-weight: bold; margin: 5px; color: #555; }
+    </style>
 </head>
 <body>
 
-<!-- ════════════ LOGIN ════════════ -->
-<div id="loginScreen">
-  <div class="login-card">
-    <div class="login-logo">
-      <span class="icon">🛣️</span>
-      <h1>Alliance Survey Pro</h1>
-      <p>Road Survey & GPS Alignment Tool v6.0</p>
-    </div>
-    <div class="field">
-      <label>Login ID</label>
-      <input type="text" id="username" placeholder="Enter your login ID" autocomplete="username">
-    </div>
-    <div class="field">
-      <label>Password</label>
-      <input type="password" id="password" placeholder="Enter password" autocomplete="current-password"
-        onkeydown="if(event.key==='Enter')processLogin()">
-    </div>
-    <button class="btn-login" onclick="processLogin()">Sign In →</button>
-    <p id="loginError">⚠ Invalid credentials. Try again.</p>
-  </div>
-</div>
-
-<!-- ════════════ MAIN APP ════════════ -->
-<div id="mainApp">
-
-  <!-- HEADER -->
-  <div class="app-header">
-    <div class="left">
-      <div class="logo-dot" id="trackingDot"></div>
-      <h2>Alliance Survey</h2>
-      <div class="road-badge" id="headerRoadName">No road set</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div class="signal-bars" id="signalBars">
-        <div class="signal-bar" style="height:4px"></div>
-        <div class="signal-bar" style="height:7px"></div>
-        <div class="signal-bar" style="height:10px"></div>
-        <div class="signal-bar" style="height:14px"></div>
-        <div class="signal-bar" style="height:18px"></div>
-      </div>
-      <div class="gps-pill"><div class="gps-dot" id="gpsDot"></div><span id="gpsAccText">N/A</span></div>
-    </div>
-  </div>
-
-  <!-- TABS -->
-  <div class="nav-bar">
-    <div class="nav-tab active" onclick="switchPanel(1)"><span class="tab-icon">📡</span>Survey</div>
-    <div class="nav-tab" onclick="switchPanel(2)"><span class="tab-icon">🗂️</span>Road Info</div>
-    <div class="nav-tab" onclick="switchPanel(3)"><span class="tab-icon">📶</span>Towers</div>
-    <div class="nav-tab" onclick="switchPanel(4)"><span class="tab-icon">✏️</span>Correct</div>
-    <div class="nav-tab" onclick="switchPanel(5)"><span class="tab-icon">⬇️</span>Export</div>
-  </div>
-
-  <!-- PANELS WRAP -->
-  <div class="panels-wrap">
-
-    <!-- ─── PANEL 1: LIVE SURVEY ─── -->
-    <div id="panel1" class="panel active">
-
-      <!-- Status -->
-      <div class="status-bar standby" id="statusBar">
-        <span class="status-icon">🔵</span>
-        <span id="statusText">Standby — Press Start to begin tracking</span>
-      </div>
-
-      <!-- Metrics -->
-      <div class="metrics-row">
-        <div class="metric-box">
-          <span class="metric-val" id="metPts">0</span>
-          <span class="metric-lbl">Points</span>
-        </div>
-        <div class="metric-box">
-          <span class="metric-val" id="metDist">0.00</span>
-          <span class="metric-lbl">km</span>
-        </div>
-        <div class="metric-box">
-          <span class="metric-val" id="metAcc">—</span>
-          <span class="metric-lbl">Acc (m)</span>
-        </div>
-      </div>
-
-      <!-- Accuracy bar -->
-      <div class="card accuracy-bar-wrap" style="padding:10px 14px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span class="card-title" style="margin-bottom:0;">GPS Signal Quality</span>
-          <span id="accLabel" style="font-size:11px;color:var(--text3);">Waiting…</span>
-        </div>
-        <div class="accuracy-bar-track">
-          <div class="accuracy-bar-fill" id="accBar"></div>
-        </div>
-      </div>
-
-      <!-- Map -->
-      <div id="mapPanel1"></div>
-
-      <!-- Controls -->
-      <div class="card">
-        <div class="card-title">🎮 Tracking Controls</div>
-        <button class="btn btn-primary" id="startBtn" onclick="startTracking()">▶ Start GPS Tracking</button>
-        <button class="btn btn-stop" id="stopBtn" onclick="stopTracking()" disabled>⏹ Stop Tracking</button>
-        <button class="btn btn-cyan" onclick="centerMap()" style="margin-top:8px;">🎯 Re-center Map</button>
-      </div>
-
-      <!-- Camera -->
-      <div class="card">
-        <div class="card-title">📷 Photo Capture (GPS Watermark)</div>
-        <label class="photo-label">
-          <input type="file" accept="image/*" capture="environment" id="cameraInput" onchange="capturePhoto()">
-          📷 Take Photo with GPS Stamp
-        </label>
-      </div>
-
-      <!-- Manual Point -->
-      <div class="card">
-        <div class="card-title">📍 Add Landmark / Point</div>
-        <div class="form-field">
-          <label>Point Type</label>
-          <select id="pointType">
-            <option value="Landmark">Landmark</option>
-            <option value="Culvert">Culvert</option>
-            <option value="Bridge">Bridge</option>
-            <option value="Intersection">Intersection</option>
-            <option value="Damage">Road Damage</option>
-            <option value="Tower">Cell Tower</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label>Remarks</label>
-          <input type="text" id="pointRemarks" placeholder="Describe this point…">
-        </div>
-        <button class="btn btn-warn" onclick="addManualPoint()">📍 Add Point at Current Location</button>
-      </div>
+    <div id="loginScreen" class="login-screen">
+        <h2>Alliance Survey Login</h2>
+        <input type="text" id="username" placeholder="Enter Login ID" required>
+        <input type="password" id="password" placeholder="Enter Password" required>
+        <button onclick="processLogin()">Login</button>
+        <p id="loginError" style="color: red; display: none; font-weight: bold; margin-top: 10px;">Invalid ID or Password!</p>
     </div>
 
-    <!-- ─── PANEL 2: ROAD DETAILS ─── -->
-    <div id="panel2" class="panel">
-      <div class="card">
-        <div class="card-title">🗺️ Road Identity</div>
-        <div class="form-field">
-          <label>Road Name / ID *</label>
-          <input type="text" id="attrRoadName" placeholder="e.g. Burdwan–AHT Road" oninput="syncRoadName()">
+    <div id="mainApp" class="main-app">
+        <div class="nav-bar">
+            <div class="nav-tab active" onclick="switchPanel(1)">1. Survey</div>
+            <div class="nav-tab" onclick="switchPanel(2)">2. Road Details</div>
+            <div class="nav-tab" onclick="switchPanel(3)">3. Line Correction</div>
         </div>
-        <div class="form-field">
-          <label>Road Code</label>
-          <input type="text" id="attrRoadCode" placeholder="e.g. WB-SH-02">
-        </div>
-        <div class="form-field">
-          <label>Road Type</label>
-          <select id="attrRoadType">
-            <option>State Highway</option>
-            <option>District Road</option>
-            <option>Rural Road (PMGSY)</option>
-            <option>Urban Road</option>
-            <option>Other</option>
-          </select>
-        </div>
-      </div>
 
-      <div class="card">
-        <div class="card-title">📐 Structural Dimensions</div>
-        <div class="form-field">
-          <label>Carriageway Width / Surface Type</label>
-          <input type="text" id="attrCarriageway" placeholder="e.g. 3.75 m Bituminous">
-        </div>
-        <div class="form-field">
-          <label>Roadway Total Width (m)</label>
-          <input type="number" id="attrRoadwayWidth" placeholder="e.g. 7.5">
-        </div>
-        <div class="form-field">
-          <label>Road Length (km)</label>
-          <input type="number" id="attrRoadLength" placeholder="e.g. 4.25" step="0.01">
-        </div>
-        <div class="form-field">
-          <label>Embankment Details</label>
-          <input type="text" id="attrEmbankment" placeholder="e.g. Stable Earthen Shoulder">
-        </div>
-      </div>
+        <div id="panel1" class="panel active">
+            <h2>Live Road Survey</h2>
+            <div class="info-box">
+                <strong>Road Name/ID:</strong> <span id="surveyRoadName">Not Set (Go to Panel 2)</span>
+            </div>
+            
+            <button id="startBtn" onclick="startTracking()">▶ Start Tracking</button>
+            <button id="stopBtn" class="stop-btn" onclick="stopTracking()" disabled>■ Stop Tracking</button>
+            
+            <label class="custom-file-upload">
+                <input type="file" accept="image/*" capture="environment" id="cameraInput" onchange="capturePhoto()">
+                📷 Capture Image (Landscape)
+            </label>
 
-      <div class="card">
-        <div class="card-title">📝 Condition & Remarks</div>
-        <div class="form-field">
-          <label>Surface Condition</label>
-          <select id="attrCondition">
-            <option>Good</option>
-            <option>Fair</option>
-            <option>Poor</option>
-            <option>Very Poor</option>
-          </select>
+            <div style="background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #ddd; margin-top: 10px;">
+                <input type="text" id="pointRemarks" placeholder="Enter Point Remarks (Optional)">
+                <button class="manual-btn" onclick="addManualPoint()">📍 Add Point Manually</button>
+            </div>
+
+            <div id="status" class="status-text" style="color: red; margin-top: 10px;">Status: Standby</div>
+            <div id="accuracy-text" style="font-size: 13px; color: #666;">GPS Accuracy: N/A</div>
+            
+            <div id="map"></div>
+            
+            <button class="export-excel" style="background: #17A2B8;" onclick="exportKML()">🗺️ Export KML (Google Earth)</button>
         </div>
-        <div class="form-field">
-          <label>General Remarks</label>
-          <textarea id="attrRemarks" placeholder="Structural features, drainage, hazards…"></textarea>
+
+        <div id="panel2" class="panel">
+            <h2>Road Structural Attributes</h2>
+            <div class="form-group">
+                <label>Road Name / ID *</label>
+                <input type="text" id="attrRoadName" placeholder="e.g. Burdwan-AHT Road" oninput="updateRoadNameSync()">
+                
+                <label>Road Code</label>
+                <input type="text" id="attrRoadCode" placeholder="Enter Road Code">
+
+                <label>Carriageway Width / Type</label>
+                <input type="text" id="attrCarriageway" placeholder="e.g. 3.75m Bituminous">
+
+                <label>Embankment Details</label>
+                <input type="text" id="attrEmbankment" placeholder="e.g. Stable Earthen Shoulder">
+
+                <label>Road Length (km)</label>
+                <input type="text" id="attrRoadLength" placeholder="e.g. 4.25">
+
+                <label>Roadway Width (m)</label>
+                <input type="text" id="attrRoadwayWidth" placeholder="e.g. 7.5">
+
+                <label>General Remarks</label>
+                <textarea id="attrRemarks" rows="3" placeholder="Enter structural features or details..."></textarea>
+                
+                <button class="export-excel" onclick="exportRoadDetailsExcel()">⬇️ Export Road Details Excel</button>
+                <button class="export-excel" style="background: #007BFF; margin-top: 8px;" onclick="exportAllPointsExcel()">⬇️ Export Points Coordinate Excel</button>
+            </div>
         </div>
-      </div>
+
+        <div id="panel3" class="panel">
+            <h2>Line Correction Mode 🛠️</h2>
+            <p style="font-size: 14px; color: #555; text-align: left; padding: 0 10px;">
+                বাইক চালানোর কারণে লাইনে কোনো ভুল বা আকাবাঁকা সোজা দাগ তৈরি হলে এখান থেকে ঠিক করতে পারবেন। নিচের বাটনে ক্লিক করলে সমস্ত সার্ভে পয়েন্ট ম্যাপে দৃশ্যমান হবে। পয়েন্টটিকে আঙুল দিয়ে <strong>Drag (টেনে)</strong> সঠিক রাস্তায় বসিয়ে দিন, অ্যালাইনমেন্ট লাইনটি স্বয়ংক্রিয়ভাবে কারেক্ট হয়ে যাবে।
+            </p>
+            <button onclick="activateLineCorrection()" style="background: #6C757D;">🔄 Load Draggable Points on Map</button>
+            <div id="correctionStatus" class="status-text" style="color: green; margin-top: 10px;"></div>
+            <div id="mapContainerPanel3"></div>
+        </div>
     </div>
 
-    <!-- ─── PANEL 3: TOWER CROSSCHECK ─── -->
-    <div id="panel3" class="panel">
-      <div class="card">
-        <div class="card-title">📶 Cell Tower / Reference Crosscheck</div>
-        <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">
-          Add known tower or reference point coordinates to crosscheck your GPS alignment. The tool will show bearing and distance from your current position in real-time.
-        </p>
-        <div class="form-field">
-          <label>Tower / Reference Name</label>
-          <input type="text" id="towerName" placeholder="e.g. BSNL Tower Burdwan">
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div class="form-field">
-            <label>Latitude</label>
-            <input type="number" id="towerLat" placeholder="23.2352" step="0.000001">
-          </div>
-          <div class="form-field">
-            <label>Longitude</label>
-            <input type="number" id="towerLng" placeholder="87.8590" step="0.000001">
-          </div>
-        </div>
-        <div class="form-field">
-          <label>Type</label>
-          <select id="towerType">
-            <option value="cell">Cell Tower</option>
-            <option value="tower">Survey Tower</option>
-            <option value="ref">Reference Point</option>
-          </select>
-        </div>
-        <button class="btn btn-primary" onclick="addTower()">+ Add Reference Point</button>
-        <button class="btn btn-ghost" style="margin-top:8px;" onclick="autoDetectTowers()">📡 Auto-detect Nearby Towers (OpenCelliD)</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">📍 Registered Reference Points</div>
-        <div class="tower-list" id="towerList">
-          <p style="color:var(--text3);font-size:12px;text-align:center;padding:16px 0;">No reference points added yet.</p>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">🧭 Crosscheck Analysis</div>
-        <div class="metrics-row" id="crosscheckMetrics">
-          <div class="metric-box"><span class="metric-val" id="ccBearing">—</span><span class="metric-lbl">Bearing°</span></div>
-          <div class="metric-box"><span class="metric-val" id="ccDist">—</span><span class="metric-lbl">Dist (m)</span></div>
-          <div class="metric-box"><span class="metric-val" id="ccError">—</span><span class="metric-lbl">GPS Δ (m)</span></div>
-        </div>
-        <button class="btn btn-success" onclick="runCrosscheck()" style="margin-top:4px;">🔄 Run Crosscheck Now</button>
-      </div>
-    </div>
-
-    <!-- ─── PANEL 4: LINE CORRECTION ─── -->
-    <div id="panel4" class="panel">
-      <div class="card">
-        <div class="card-title">✏️ Alignment Correction</div>
-        <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">
-          বাইক চালানোর কারণে ভুল পয়েন্ট তৈরি হলে এখান থেকে drag করে ঠিক করুন।
-        </p>
-        <div class="correction-controls">
-          <button class="btn btn-ghost btn-sm" onclick="activateLineCorrection()">🔄 Load Draggable Points</button>
-          <button class="btn btn-ghost btn-sm" onclick="deleteLastPoint()">🗑️ Delete Last</button>
-          <button class="btn btn-ghost btn-sm" onclick="undoLastDrag()">↩ Undo</button>
-        </div>
-        <div id="correctionStatus" style="font-size:12px;color:var(--accent2);margin-bottom:8px;min-height:18px;"></div>
-      </div>
-
-      <div class="card" style="padding:0;overflow:hidden;">
-        <div id="mapPanel4" style="height:40vh;"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">📋 Point Log</div>
-        <div class="point-log" id="pointLog">
-          <p style="color:var(--text3);font-size:12px;text-align:center;padding:16px;">No points recorded.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── PANEL 5: EXPORT ─── -->
-    <div id="panel5" class="panel">
-      <div class="card">
-        <div class="card-title">📊 Survey Summary</div>
-        <div class="metrics-row">
-          <div class="metric-box"><span class="metric-val" id="expPts">0</span><span class="metric-lbl">Points</span></div>
-          <div class="metric-box"><span class="metric-val" id="expDist">0.00</span><span class="metric-lbl">km</span></div>
-          <div class="metric-box"><span class="metric-val" id="expPhotos">0</span><span class="metric-lbl">Photos</span></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">⬇️ Export Data</div>
-        <button class="btn btn-success" onclick="exportKML()" style="margin-bottom:8px;">🗺️ Export KML (Google Earth)</button>
-        <div class="export-grid">
-          <button class="btn btn-primary" onclick="exportAllPointsCSV()">📍 Points CSV</button>
-          <button class="btn btn-primary" onclick="exportRoadDetailsCSV()">🗂️ Road Details CSV</button>
-        </div>
-        <button class="btn btn-warn" onclick="exportGeoJSON()" style="margin-top:8px;">🌍 Export GeoJSON</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">🔁 Session</div>
-        <button class="btn btn-ghost" onclick="clearSession()">🗑️ Clear All Data &amp; Reset Session</button>
-      </div>
-    </div>
-  </div><!-- /panels-wrap -->
-</div><!-- /mainApp -->
-
-<!-- TOAST -->
-<div id="toast"></div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-// ══════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════
-let currentUser = "";
-let map1 = null, map4 = null;
-let polyline1 = null, polyline4 = null;
-let posMarker1 = null, accCircle1 = null;
-let watchId = null, wakeLock = null;
-let surveyData = [];
-let towers = [];
-let pointCounter = 1;
-let photoCount = 0;
-let totalDistance = 0;
-let correctionMarkers = [];
-let lastUndoState = null;
-let isTracking = false;
-let latestPosition = null;
-
-// ══════════════════════════════════════════════
-//  LOGIN
-// ══════════════════════════════════════════════
-function processLogin() {
-  const u = document.getElementById("username").value.trim();
-  const p = document.getElementById("password").value;
-  if (u === "alliance" && p === "123") {
-    currentUser = u;
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("mainApp").style.display = "flex";
-    document.getElementById("mainApp").style.flexDirection = "column";
-    initMaps();
-    startPassiveGPS();
-  } else {
-    document.getElementById("loginError").style.display = "block";
-  }
-}
-
-// ══════════════════════════════════════════════
-//  PANEL SWITCHING
-// ══════════════════════════════════════════════
-function switchPanel(n) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('panel' + n).classList.add('active');
-  document.querySelectorAll('.nav-tab')[n-1].classList.add('active');
-  if (n === 1 && map1) setTimeout(() => map1.invalidateSize(), 150);
-  if (n === 4 && map4) setTimeout(() => { map4.invalidateSize(); if (polyline4) { const b = polyline4.getBounds(); if(b.isValid()) map4.fitBounds(b); } }, 150);
-  if (n === 5) refreshExportPanel();
-}
-
-// ══════════════════════════════════════════════
-//  MAP INIT
-// ══════════════════════════════════════════════
-function initMaps() {
-  // Panel 1 map
-  map1 = L.map('mapPanel1', { zoomControl: true }).setView([23.235, 87.859], 15);
-  addTileLayer(map1);
-  polyline1 = L.polyline([], { color: '#3b82f6', weight: 5, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }).addTo(map1);
-
-  posMarker1 = L.circleMarker([23.235, 87.859], {
-    radius: 8, fillColor: "#3b82f6", color: "#fff", weight: 2.5, fillOpacity: 1
-  }).addTo(map1);
-
-  accCircle1 = L.circle([23.235, 87.859], {
-    radius: 0, color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.1, weight: 1
-  }).addTo(map1);
-
-  // Panel 4 map
-  map4 = L.map('mapPanel4', { zoomControl: false }).setView([23.235, 87.859], 15);
-  addTileLayer(map4);
-  polyline4 = L.polyline([], { color: '#3b82f6', weight: 5, opacity: 0.9 }).addTo(map4);
-}
-
-function addTileLayer(mapInst) {
-  // Hybrid: satellite + labels for better road visibility
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    maxZoom: 20, attribution: '© Esri'
-  }).addTo(mapInst);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
-    maxZoom: 20, opacity: 0.85
-  }).addTo(mapInst);
-}
-
-// ══════════════════════════════════════════════
-//  PASSIVE GPS (header badge updates)
-// ══════════════════════════════════════════════
-function startPassiveGPS() {
-  navigator.geolocation.watchPosition(pos => {
-    latestPosition = pos;
-    const acc = pos.coords.accuracy;
-    const dot = document.getElementById('gpsDot');
-    const txt = document.getElementById('gpsAccText');
-    txt.textContent = acc < 1000 ? acc.toFixed(0) + 'm' : '—';
-    dot.className = 'gps-dot ' + (acc <= 8 ? 'good' : acc <= 20 ? 'ok' : 'bad');
-    updateSignalBars(acc);
-    // update position marker even when not recording
-    posMarker1.setLatLng([pos.coords.latitude, pos.coords.longitude]);
-    accCircle1.setLatLng([pos.coords.latitude, pos.coords.longitude]).setRadius(acc);
-  }, () => {}, { enableHighAccuracy: true, maximumAge: 2000 });
-}
-
-function updateSignalBars(acc) {
-  const bars = document.querySelectorAll('.signal-bar');
-  let lit = acc <= 5 ? 5 : acc <= 10 ? 4 : acc <= 20 ? 3 : acc <= 50 ? 2 : 1;
-  bars.forEach((b, i) => b.classList.toggle('lit', i < lit));
-}
-
-// ══════════════════════════════════════════════
-//  GPS TRACKING ENGINE
-// ══════════════════════════════════════════════
-async function startTracking() {
-  const roadName = document.getElementById("attrRoadName").value.trim();
-  if (!roadName) { toast("⚠ Set a Road Name in 'Road Info' tab first"); switchPanel(2); return; }
-
-  document.getElementById('startBtn').disabled = true;
-  document.getElementById('stopBtn').disabled = false;
-  isTracking = true;
-  setStatus('warn', '🔒', 'Locking GPS satellites…');
-  document.getElementById('trackingDot').style.animationDuration = '0.6s';
-
-  try {
-    if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
-  } catch(e) {}
-
-  watchId = navigator.geolocation.watchPosition(
-    handleGPSUpdate,
-    err => { setStatus('error', '❌', 'GPS Error — Enable device location'); },
-    { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
-  );
-}
-
-function stopTracking() {
-  if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
-  if (wakeLock) { wakeLock.release(); wakeLock = null; }
-  document.getElementById('startBtn').disabled = false;
-  document.getElementById('stopBtn').disabled = true;
-  isTracking = false;
-  setStatus('error', '⏹', `Tracking stopped — ${surveyData.length} points, ${totalDistance.toFixed(2)} km`);
-  document.getElementById('trackingDot').style.animationDuration = '2s';
-  toast('Tracking stopped. ' + surveyData.length + ' points saved.');
-}
-
-function handleGPSUpdate(position) {
-  const lat = position.coords.latitude;
-  const lng = position.coords.longitude;
-  const acc = position.coords.accuracy;
-  const alt = position.coords.altitude;
-  latestPosition = position;
-
-  // Update header
-  document.getElementById('gpsAccText').textContent = acc.toFixed(0) + 'm';
-  const dot = document.getElementById('gpsDot');
-  dot.className = 'gps-dot ' + (acc <= 8 ? 'good' : acc <= 20 ? 'ok' : 'bad');
-  updateSignalBars(acc);
-
-  // Update metric
-  document.getElementById('metAcc').textContent = acc.toFixed(0);
-  document.getElementById('accLabel').textContent = acc <= 5 ? 'Excellent' : acc <= 10 ? 'Good' : acc <= 20 ? 'Fair' : 'Poor';
-  const barPct = Math.max(0, Math.min(100, (1 - (acc / 60)) * 100));
-  const barEl = document.getElementById('accBar');
-  barEl.style.width = barPct + '%';
-  barEl.style.background = acc <= 8 ? '#10b981' : acc <= 20 ? '#f59e0b' : '#ef4444';
-
-  // Move position marker
-  posMarker1.setLatLng([lat, lng]);
-  accCircle1.setLatLng([lat, lng]).setRadius(acc);
-  map1.panTo([lat, lng]);
-
-  // Accuracy gate — skip bad points
-  if (acc > 30) {
-    setStatus('warn', '⚠️', `Weak GPS (${acc.toFixed(0)} m) — waiting for better signal`);
-    return;
-  }
-
-  setStatus('tracking', '📍', `Tracking — Acc: ${acc.toFixed(0)} m · Pts: ${surveyData.length}`);
-
-  // Distance filter — skip if not moved enough
-  if (surveyData.length > 0) {
-    const last = surveyData[surveyData.length - 1];
-    if (last.type === "Route Point") {
-      const d = haversine(parseFloat(last.lat), parseFloat(last.lng), lat, lng);
-      if (d < 3) return; // only record if moved > 3 m
-      totalDistance += d / 1000;
-    }
-  }
-
-  const latLng = [lat, lng];
-  polyline1.addLatLng(latLng);
-  polyline4.addLatLng(latLng);
-
-  // Small route dot
-  L.circleMarker(latLng, { radius: 2.5, fillColor: '#3b82f6', color: '#000', weight: 0.5, fillOpacity: 0.7, interactive: false }).addTo(map1);
-
-  surveyData.push({
-    point: pointCounter++,
-    lat: lat.toFixed(7), lng: lng.toFixed(7),
-    alt: alt ? alt.toFixed(1) : 'N/A',
-    accuracy: acc.toFixed(1),
-    time: new Date().toLocaleTimeString('en-GB'),
-    type: "Route Point",
-    remarks: "Auto Path"
-  });
-
-  document.getElementById('metPts').textContent = surveyData.length;
-  document.getElementById('metDist').textContent = totalDistance.toFixed(2);
-  refreshPointLog();
-}
-
-function centerMap() {
-  if (latestPosition) {
-    map1.setView([latestPosition.coords.latitude, latestPosition.coords.longitude], 18);
-  } else {
-    navigator.geolocation.getCurrentPosition(p => map1.setView([p.coords.latitude, p.coords.longitude], 18));
-  }
-}
-
-// ══════════════════════════════════════════════
-//  MANUAL POINT
-// ══════════════════════════════════════════════
-function addManualPoint() {
-  const remark = document.getElementById("pointRemarks").value.trim() || "Marked Point";
-  const ptype = document.getElementById("pointType").value;
-
-  const getSrc = latestPosition
-    ? Promise.resolve(latestPosition)
-    : new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true }));
-
-  setStatus('warn', '⌛', 'Fetching precise location…');
-
-  getSrc.then(pos => {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    const acc = pos.coords.accuracy;
-    const latLng = [lat, lng];
-
-    const colors = { Landmark:'#10b981', Culvert:'#06b6d4', Bridge:'#6366f1', Intersection:'#f59e0b', Damage:'#ef4444', Tower:'#f472b6', Other:'#94a3b8' };
-    const col = colors[ptype] || '#ef4444';
-
-    L.circleMarker(latLng, { radius: 8, fillColor: col, color: '#fff', weight: 2, fillOpacity: 1 })
-      .addTo(map1)
-      .bindPopup(`<b>${ptype} #${pointCounter}</b><br>${remark}<br><small>±${acc.toFixed(0)} m</small>`)
-      .openPopup();
-
-    polyline1.addLatLng(latLng);
-    polyline4.addLatLng(latLng);
-
-    surveyData.push({
-      point: pointCounter++, lat: lat.toFixed(7), lng: lng.toFixed(7),
-      alt: pos.coords.altitude ? pos.coords.altitude.toFixed(1) : 'N/A',
-      accuracy: acc.toFixed(1), time: new Date().toLocaleTimeString('en-GB'),
-      type: ptype + " (Manual)", remarks: remark
-    });
-
-    document.getElementById('pointRemarks').value = "";
-    document.getElementById('metPts').textContent = surveyData.length;
-    setStatus('tracking', '✅', `Point added: ${ptype} — "${remark}"`);
-    toast('📍 Point added: ' + remark);
-    refreshPointLog();
-  }).catch(() => setStatus('error', '❌', 'GPS error during manual point add'));
-}
-
-// ══════════════════════════════════════════════
-//  TOWER CROSSCHECK
-// ══════════════════════════════════════════════
-function addTower() {
-  const name = document.getElementById("towerName").value.trim();
-  const lat = parseFloat(document.getElementById("towerLat").value);
-  const lng = parseFloat(document.getElementById("towerLng").value);
-  const type = document.getElementById("towerType").value;
-
-  if (!name || isNaN(lat) || isNaN(lng)) { toast("⚠ Enter name and valid coordinates"); return; }
-
-  towers.push({ name, lat, lng, type });
-  document.getElementById("towerName").value = "";
-  document.getElementById("towerLat").value = "";
-  document.getElementById("towerLng").value = "";
-
-  // Add marker to both maps
-  const icon = L.divIcon({
-    className: '',
-    html: `<div style="background:${type==='cell'?'#3b82f6':type==='tower'?'#f59e0b':'#10b981'};color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap;border:1px solid rgba(255,255,255,0.3);">${type==='cell'?'📶':'📡'} ${name}</div>`,
-    iconAnchor: [0, 0]
-  });
-  L.marker([lat, lng], { icon }).addTo(map1);
-  L.marker([lat, lng], { icon }).addTo(map4);
-
-  renderTowerList();
-  toast('Reference point added: ' + name);
-}
-
-function renderTowerList() {
-  const list = document.getElementById("towerList");
-  if (towers.length === 0) { list.innerHTML = '<p style="color:var(--text3);font-size:12px;text-align:center;padding:16px;">No reference points added.</p>'; return; }
-
-  list.innerHTML = towers.map((t, i) => {
-    let distStr = '—', bearStr = '—';
-    if (latestPosition) {
-      const d = haversine(latestPosition.coords.latitude, latestPosition.coords.longitude, t.lat, t.lng);
-      const b = bearing(latestPosition.coords.latitude, latestPosition.coords.longitude, t.lat, t.lng);
-      distStr = d < 1000 ? d.toFixed(0) + ' m' : (d/1000).toFixed(2) + ' km';
-      bearStr = b.toFixed(0) + '°';
-    }
-    return `<div class="tower-item">
-      <div>
-        <div class="t-name">${t.name}</div>
-        <div class="t-bearing">Bearing: ${bearStr} · ${distStr}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;">
-        <span class="t-type ${t.type}">${t.type}</span>
-        <span onclick="removeTower(${i})" style="cursor:pointer;color:var(--danger);font-size:14px;">✕</span>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function removeTower(i) { towers.splice(i, 1); renderTowerList(); }
-
-function runCrosscheck() {
-  if (!latestPosition) { toast("⚠ GPS not available"); return; }
-  if (towers.length === 0) { toast("⚠ No reference points added"); return; }
-
-  const myLat = latestPosition.coords.latitude;
-  const myLng = latestPosition.coords.longitude;
-  const myAcc = latestPosition.coords.accuracy;
-
-  let nearest = null, nearestDist = Infinity;
-  towers.forEach(t => {
-    const d = haversine(myLat, myLng, t.lat, t.lng);
-    if (d < nearestDist) { nearestDist = d; nearest = t; }
-  });
-
-  const b = bearing(myLat, myLng, nearest.lat, nearest.lng);
-  document.getElementById('ccBearing').textContent = b.toFixed(0) + '°';
-  document.getElementById('ccDist').textContent = nearestDist < 1000 ? nearestDist.toFixed(0) : (nearestDist/1000).toFixed(2)+'k';
-  document.getElementById('ccError').textContent = myAcc.toFixed(0);
-
-  renderTowerList();
-  toast(`Crosscheck: Nearest — ${nearest.name} at ${nearestDist.toFixed(0)} m, bearing ${b.toFixed(0)}°`);
-}
-
-function autoDetectTowers() {
-  if (!latestPosition) { navigator.geolocation.getCurrentPosition(p => { latestPosition = p; autoDetectTowers(); }, () => toast("⚠ GPS not available"), {enableHighAccuracy:true}); return; }
-  toast("📡 Auto-detection uses OpenCelliD API key — add known towers manually for offline use.");
-}
-
-// ══════════════════════════════════════════════
-//  LINE CORRECTION (PANEL 4)
-// ══════════════════════════════════════════════
-function activateLineCorrection() {
-  if (surveyData.length === 0) { toast("⚠ No survey points to load"); return; }
-  correctionMarkers.forEach(m => map4.removeLayer(m));
-  correctionMarkers = [];
-  lastUndoState = JSON.parse(JSON.stringify(surveyData));
-
-  surveyData.forEach((node, idx) => {
-    const m = L.marker([parseFloat(node.lat), parseFloat(node.lng)], {
-      draggable: true,
-      icon: L.divIcon({
-        className: '',
-        html: `<div style="background:#f97316;width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.5)"></div>`,
-        iconSize: [12, 12], iconAnchor: [6, 6]
-      }),
-      title: `Pt ${node.point}`
-    }).addTo(map4);
-
-    m.on('dragend', () => {
-      const ll = m.getLatLng();
-      surveyData[idx].lat = ll.lat.toFixed(7);
-      surveyData[idx].lng = ll.lng.toFixed(7);
-      surveyData[idx].remarks += ' [Corrected]';
-      refreshPolylines();
-      document.getElementById('correctionStatus').textContent = `✔ Point ${node.point} updated`;
-      refreshPointLog();
-    });
-    correctionMarkers.push(m);
-  });
-
-  const b = polyline4.getBounds();
-  if (b.isValid()) map4.fitBounds(b, { padding: [20, 20] });
-  document.getElementById('correctionStatus').textContent = `${surveyData.length} draggable points loaded. Drag to correct.`;
-}
-
-function deleteLastPoint() {
-  if (surveyData.length === 0) { toast("⚠ No points to delete"); return; }
-  lastUndoState = JSON.parse(JSON.stringify(surveyData));
-  surveyData.pop();
-  refreshPolylines();
-  refreshPointLog();
-  document.getElementById('metPts').textContent = surveyData.length;
-  toast('Last point deleted');
-}
-
-function undoLastDrag() {
-  if (!lastUndoState) { toast("Nothing to undo"); return; }
-  surveyData = lastUndoState;
-  lastUndoState = null;
-  refreshPolylines();
-  refreshPointLog();
-  toast('↩ Undone');
-}
-
-function refreshPolylines() {
-  const lls = surveyData.map(n => [parseFloat(n.lat), parseFloat(n.lng)]);
-  polyline1.setLatLngs(lls);
-  polyline4.setLatLngs(lls);
-}
-
-function refreshPointLog() {
-  const log = document.getElementById('pointLog');
-  if (surveyData.length === 0) { log.innerHTML = '<p style="color:var(--text3);font-size:12px;text-align:center;padding:16px;">No points recorded.</p>'; return; }
-  const recent = surveyData.slice(-50).reverse();
-  log.innerHTML = recent.map(r => {
-    const cls = r.type === 'Route Point' ? 'route' : r.type.includes('Photo') ? 'photo' : 'manual';
-    return `<div class="point-row">
-      <span class="pt-num">${r.point}</span>
-      <span class="pt-coord">${r.lat}, ${r.lng}</span>
-      <span class="pt-type ${cls}">${r.type.split(' ')[0]}</span>
-    </div>`;
-  }).join('');
-}
-
-// ══════════════════════════════════════════════
-//  CAMERA / WATERMARK
-// ══════════════════════════════════════════════
-function capturePhoto() {
-  const fileInput = document.getElementById('cameraInput');
-  if (!fileInput.files.length) return;
-  setStatus('warn', '⌛', 'Stamping GPS watermark…');
-
-  const doStamp = (pos) => {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    const acc = pos.coords.accuracy;
-    const alt = pos.coords.altitude;
-
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width; canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-
-        const dmsLat = toDMS(lat, true);
-        const dmsLng = toDMS(lng, false);
-        const dateStr = new Date().toLocaleDateString('en-GB').replace(/\//g,'-');
-        const timeStr = new Date().toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
-        const altStr = alt ? alt.toFixed(1) + ' m' : '12.71 m';
-        const roadName = document.getElementById("attrRoadName").value.trim() || "Road";
-        const ptNum = pointCounter;
-
-        const lines = [
-          `📍 ${roadName}`,
-          `Lat: ${dmsLat}`,
-          `Lon: ${dmsLng}`,
-          `Alt: ${altStr}  Acc: ±${acc.toFixed(0)} m`,
-          `${dateStr}  ${timeStr}`,
-          `Alliance Survey Pro`
-        ];
-
-        const fs = Math.max(canvas.width * 0.018, 13);
-        ctx.font = `${fs}px monospace`;
-        const lh = fs * 1.4;
-        let maxW = 0;
-        lines.forEach(l => { maxW = Math.max(maxW, ctx.measureText(l).width); });
-
-        const mg = fs * 0.7;
-        const bw = maxW + mg * 2;
-        const bh = lines.length * lh + mg * 2;
-
-        // Bottom-left box
-        ctx.fillStyle = "rgba(0,0,0,0.6)";
-        ctx.fillRect(mg, canvas.height - bh - mg, bw, bh);
-        // Blue left accent bar
-        ctx.fillStyle = "#3b82f6";
-        ctx.fillRect(mg, canvas.height - bh - mg, 3, bh);
-
-        ctx.fillStyle = "#ffffff";
-        ctx.textBaseline = "top";
-        lines.forEach((line, i) => {
-          ctx.fillText(line, mg + 3 + mg * 0.5, canvas.height - bh - mg + mg + i * lh);
-        });
-
-        // Yellow dot marker top-right
-        ctx.fillStyle = "#f59e0b";
-        ctx.beginPath();
-        ctx.arc(canvas.width - 20, 20, 8, 0, Math.PI * 2);
-        ctx.fill();
-
-        downloadFile(canvas.toDataURL('image/jpeg', 0.92), `IMG_${roadName}_Pt${ptNum}.jpg`);
-
-        const latLng = [lat, lng];
-        L.circleMarker(latLng, { radius: 9, fillColor: "#f59e0b", color: "#000", weight: 2, fillOpacity: 1 })
-          .addTo(map1).bindPopup(`<b>📷 Photo Point ${ptNum}</b>`);
-
-        surveyData.push({
-          point: pointCounter++, lat: lat.toFixed(7), lng: lng.toFixed(7),
-          alt: altStr, accuracy: acc.toFixed(1),
-          time: timeStr, type: "Photo Point",
-          remarks: `Photo: IMG_${roadName}_Pt${ptNum}.jpg`
-        });
-        photoCount++;
-        document.getElementById('metPts').textContent = surveyData.length;
-        setStatus('tracking', '📷', 'Photo captured with GPS watermark ✔');
-        toast('📷 Photo saved with GPS stamp');
-        refreshPointLog();
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(fileInput.files[0]);
-  };
-
-  if (latestPosition && latestPosition.coords.accuracy <= 30) {
-    doStamp(latestPosition);
-  } else {
-    navigator.geolocation.getCurrentPosition(doStamp,
-      () => setStatus('error','❌','GPS error during photo capture'),
-      { enableHighAccuracy: true, timeout: 10000 });
-  }
-}
-
-// ══════════════════════════════════════════════
-//  EXPORTS
-// ══════════════════════════════════════════════
-function exportKML() {
-  if (!surveyData.length) { toast("⚠ No data to export"); return; }
-  const rName = document.getElementById("attrRoadName").value || "Road";
-  let coords = "", marks = "";
-  surveyData.forEach(r => {
-    const a = r.alt === 'N/A' ? 0 : parseFloat(r.alt) || 0;
-    coords += `${r.lng},${r.lat},${a}\n`;
-    if (r.type !== "Route Point") {
-      marks += `<Placemark><name>Pt${r.point} [${r.type}]</name><description>${r.remarks}</description><Point><coordinates>${r.lng},${r.lat},${a}</coordinates></Point></Placemark>`;
-    }
-  });
-  const kml = `<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>${rName}</name><Style id="roadLine"><LineStyle><color>ffff8800</color><width>4</width></LineStyle></Style><Placemark><name>${rName} Centreline</name><styleUrl>#roadLine</styleUrl><LineString><tessellate>1</tessellate><coordinates>${coords}</coordinates></LineString></Placemark>${marks}</Document></kml>`;
-  const blob = new Blob([kml], { type: "application/vnd.google-earth.kml+xml" });
-  downloadFile(URL.createObjectURL(blob), `KML_${rName}.kml`);
-  toast('KML exported');
-}
-
-function exportAllPointsCSV() {
-  if (!surveyData.length) { toast("⚠ No points to export"); return; }
-  const rName = document.getElementById("attrRoadName").value || "Road";
-  let csv = "Point,Latitude,Longitude,Elevation(m),Accuracy(m),Time,Type,Remarks\n";
-  surveyData.forEach(r => { csv += `${r.point},${r.lat},${r.lng},${r.alt},${r.accuracy},${r.time},${r.type},"${r.remarks}"\n`; });
-  downloadFile(URL.createObjectURL(new Blob([csv], {type:"text/csv"})), `Points_${rName}.csv`);
-  toast('Points CSV exported');
-}
-
-function exportRoadDetailsCSV() {
-  const rName = document.getElementById("attrRoadName").value || "Road";
-  const fields = [
-    ["Surveyor", currentUser],
-    ["Road Name", rName],
-    ["Road Code", document.getElementById("attrRoadCode").value],
-    ["Road Type", document.getElementById("attrRoadType").value],
-    ["Carriageway", document.getElementById("attrCarriageway").value],
-    ["Roadway Width (m)", document.getElementById("attrRoadwayWidth").value],
-    ["Road Length (km)", document.getElementById("attrRoadLength").value],
-    ["Embankment", document.getElementById("attrEmbankment").value],
-    ["Surface Condition", document.getElementById("attrCondition").value],
-    ["Remarks", document.getElementById("attrRemarks").value],
-    ["Total Points", surveyData.length],
-    ["Total Distance (km)", totalDistance.toFixed(3)],
-    ["Photos Taken", photoCount],
-    ["Export Time", new Date().toLocaleString('en-GB')]
-  ];
-  let csv = "Parameter,Value\n" + fields.map(f => `"${f[0]}","${f[1]}"`).join("\n");
-  downloadFile(URL.createObjectURL(new Blob([csv], {type:"text/csv"})), `RoadDetails_${rName}.csv`);
-  toast('Road details CSV exported');
-}
-
-function exportGeoJSON() {
-  if (!surveyData.length) { toast("⚠ No data to export"); return; }
-  const rName = document.getElementById("attrRoadName").value || "Road";
-  const features = [{
-    type: "Feature",
-    properties: { name: rName, type: "road_centreline" },
-    geometry: { type: "LineString", coordinates: surveyData.map(r => [parseFloat(r.lng), parseFloat(r.lat)]) }
-  }];
-  surveyData.filter(r => r.type !== "Route Point").forEach(r => {
-    features.push({ type: "Feature", properties: { point: r.point, type: r.type, remarks: r.remarks, time: r.time, accuracy: r.accuracy }, geometry: { type: "Point", coordinates: [parseFloat(r.lng), parseFloat(r.lat)] } });
-  });
-  const gj = JSON.stringify({ type: "FeatureCollection", features }, null, 2);
-  downloadFile(URL.createObjectURL(new Blob([gj], {type:"application/geo+json"})), `GeoJSON_${rName}.geojson`);
-  toast('GeoJSON exported');
-}
-
-function clearSession() {
-  if (!confirm("Clear ALL survey data? This cannot be undone.")) return;
-  surveyData = []; pointCounter = 1; photoCount = 0; totalDistance = 0;
-  polyline1.setLatLngs([]); polyline4.setLatLngs([]);
-  document.getElementById('metPts').textContent = '0';
-  document.getElementById('metDist').textContent = '0.00';
-  refreshPointLog(); refreshExportPanel();
-  toast('Session cleared');
-}
-
-function refreshExportPanel() {
-  document.getElementById('expPts').textContent = surveyData.length;
-  document.getElementById('expDist').textContent = totalDistance.toFixed(2);
-  document.getElementById('expPhotos').textContent = photoCount;
-}
-
-// ══════════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════════
-function haversine(lat1, lon1, lat2, lon2) {
-  const R = 6371000, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-}
-
-function bearing(lat1, lon1, lat2, lon2) {
-  const φ1 = lat1*Math.PI/180, φ2 = lat2*Math.PI/180;
-  const Δλ = (lon2-lon1)*Math.PI/180;
-  const y = Math.sin(Δλ)*Math.cos(φ2);
-  const x = Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
-  return (Math.atan2(y,x)*180/Math.PI + 360) % 360;
-}
-
-function toDMS(dd, isLat) {
-  const abs = Math.abs(dd);
-  const d = Math.floor(abs);
-  const mf = (abs-d)*60; const m = Math.floor(mf);
-  const s = Math.floor((mf-m)*60);
-  const dir = isLat ? (dd>=0?'N':'S') : (dd>=0?'E':'W');
-  return `${d}°${m}'${s}"${dir}`;
-}
-
-function syncRoadName() {
-  const n = document.getElementById("attrRoadName").value.trim();
-  document.getElementById("headerRoadName").textContent = n || "No road set";
-}
-
-function setStatus(type, icon, text) {
-  const bar = document.getElementById('statusBar');
-  bar.className = 'status-bar ' + type;
-  document.getElementById('statusText').textContent = text;
-  bar.querySelector('.status-icon').textContent = icon;
-}
-
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-function downloadFile(url, name) {
-  const a = document.createElement('a'); a.href = url; a.download = name;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-}
-</script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // App Configurations & Variables
+        let currentUser = "";
+        let map, polyline, currentPositionMarker, accuracyCircle;
+        let surveyData = []; 
+        let watchId = null;
+        let wakeLock = null;
+        let pointCounter = 1;
+        let correctionMarkers = []; // Temporary store for panel 3 editable markers
+
+        // --- PANEL CONTROL & LOGIN ---
+        function processLogin() {
+            const user = document.getElementById("username").value.trim();
+            const pass = document.getElementById("password").value;
+            
+            // Fixed Login Credentials as requested
+            if (user === "alliance" && pass === "123") {
+                currentUser = user;
+                document.getElementById("loginScreen").style.display = "none";
+                document.getElementById("mainApp").style.display = "block";
+                initMapSystem();
+            } else {
+                document.getElementById("loginError").style.display = "block";
+            }
+        }
+
+        function switchPanel(panelNum) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById('panel' + panelNum).classList.add('active');
+            document.querySelector(`.nav-bar .nav-tab:nth-child(${panelNum})`).classList.add('active');
+            
+            // Relocate map element to the current panel view to avoid breaking Leaflet render
+            if (panelNum === 1 || panelNum === 3) {
+                const mapDiv = document.getElementById('map');
+                if (panelNum === 1) {
+                    document.getElementById('panel1').insertBefore(mapDiv, document.getElementById('panel1').lastElementChild);
+                } else if (panelNum === 3) {
+                    document.getElementById('panel3').appendChild(mapDiv);
+                }
+                setTimeout(() => { map.invalidateSize(); }, 200);
+            }
+        }
+
+        function updateRoadNameSync() {
+            const name = document.getElementById("attrRoadName").value.trim();
+            document.getElementById("surveyRoadName").innerText = name || "Not Set";
+        }
+
+        // --- MAP INITIALIZATION ---
+        function initMapSystem() {
+            map = L.map('map').setView([23.235, 87.859], 14); 
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                maxZoom: 20, attribution: '© OpenStreetMap'
+            }).addTo(map);
+            
+            polyline = L.polyline([], {color: '#007BFF', weight: 4, opacity: 0.85}).addTo(map);
+            
+            // Main marker for real-time location
+            currentPositionMarker = L.circleMarker([0,0], {
+                radius: 7, fillColor: "#007BFF", color: "#fff", weight: 2, fillOpacity: 0.9
+            }).addTo(map);
+
+            // FIX: Live Accuracy Visual Represent Circle
+            accuracyCircle = L.circle([0,0], {
+                radius: 0, color: '#007BFF', fillColor: '#007BFF', fillOpacity: 0.15, weight: 1
+            }).addTo(map);
+        }
+
+        // --- GPS TRACKING ENGINE ---
+        async function requestWakeLock() {
+            try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
+        }
+
+        function handleGPSUpdate(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+            const alt = position.coords.altitude;
+
+            document.getElementById('accuracy-text').innerText = `GPS Accuracy: ${accuracy.toFixed(1)} meters`;
+            
+            // Dynamic accuracy circle rendering
+            const latLng = [lat, lng];
+            currentPositionMarker.setLatLng(latLng);
+            accuracyCircle.setLatLng(latLng).setRadius(accuracy);
+
+            if (accuracy > 25) {
+                document.getElementById('status').innerText = "Status: Bad GPS Signal (Skipping Jump) ⚠️";
+                return;
+            }
+
+            document.getElementById('status').innerText = "Status: Tracking Active ✔";
+            document.getElementById('status').style.color = "green";
+
+            // Check if bike moved enough to drop next node (Filter standing duplicates)
+            if (surveyData.length > 0) {
+                const last = surveyData[surveyData.length - 1];
+                if (last.type === "Route Point") {
+                    const dist = getDistance(parseFloat(last.lat), parseFloat(last.lng), lat, lng);
+                    if (dist < 4) return; 
+                }
+            }
+
+            polyline.addLatLng(latLng);
+            map.setView(latLng, 18);
+
+            // Append small continuous route tracking dots
+            L.circleMarker(latLng, { radius: 3, fillColor: "#007BFF", color: "#000", weight: 0.5, fillOpacity: 0.6, interactive: false }).addTo(map);
+
+            let time = new Date().toLocaleTimeString();
+            surveyData.push({
+                point: pointCounter++, lat: lat.toFixed(6), lng: lng.toFixed(6),
+                alt: alt ? alt.toFixed(1) : 'N/A', accuracy: accuracy.toFixed(1), time: time,
+                type: "Route Point", remarks: "Auto Path"
+            });
+        }
+
+        function startTracking() {
+            const roadChk = document.getElementById("attrRoadName").value.trim();
+            if(!roadChk) { alert("Please enter Road Name in 'Road Details' tab first!"); switchPanel(2); return; }
+
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('status').innerText = "Status: Locking Satellites... 📍";
+            document.getElementById('status').style.color = "blue";
+
+            requestWakeLock();
+            watchId = navigator.geolocation.watchPosition(handleGPSUpdate, 
+                (err) => { document.getElementById('status').innerText = "GPS Error! Turn on Device Location."; },
+                { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+            );
+        }
+
+        function stopTracking() {
+            if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+            if (wakeLock !== null) { wakeLock.release(); wakeLock = null; }
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('status').innerText = "Status: Tracking Stopped 🛑";
+            document.getElementById('status').style.color = "red";
+        }
+
+        // --- ADD POINT MANUALLY OPTION WITH REMARKS ---
+        function addManualPoint() {
+            const remInput = document.getElementById("pointRemarks");
+            const remarksText = remInput.value.trim() || "Manual Marked Point";
+
+            document.getElementById('status').innerText = "Status: Marking Point... ⌛";
+
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+                let time = new Date().toLocaleTimeString();
+
+                const latLng = [lat, lng];
+                
+                // Red circle marker on map for manual point
+                L.circleMarker(latLng, {
+                    radius: 7, fillColor: "#DC3545", color: "#000", weight: 1.5, fillOpacity: 0.9
+                }).addTo(map).bindPopup(`<b>Point ${pointCounter}</b><br>${remarksText}`).openPopup();
+
+                surveyData.push({
+                    point: pointCounter++, lat: lat.toFixed(6), lng: lng.toFixed(6),
+                    alt: position.coords.altitude ? position.coords.altitude.toFixed(1) : 'N/A',
+                    accuracy: accuracy.toFixed(1), time: time,
+                    type: "Manual Point", remarks: remarksText
+                });
+
+                // Include manually marked nodes into the path polyline string
+                polyline.addLatLng(latLng);
+
+                remInput.value = ""; // clear input
+                document.getElementById('status').innerText = "Status: Manual Point Registered ✔";
+                document.getElementById('status').style.color = "green";
+            }, () => alert("GPS Error! Cannot fetch accuracy data for point marker."), { enableHighAccuracy: true });
+        }
+
+        // --- LINE CORRECTION (DRAG OPTION) ENGINE ---
+        function activateLineCorrection() {
+            if (surveyData.length === 0) { alert("No survey coordinates loaded yet!"); return; }
+            
+            // Clear previous editable markers if any
+            correctionMarkers.forEach(m => map.removeLayer(m));
+            correctionMarkers = [];
+            
+            document.getElementById("correctionStatus").innerText = "Drag mode active! Drag orange nodes to fix errors.";
+            
+            // Loop data arrays and project draggable nodes
+            surveyData.forEach((dataNode, index) => {
+                const marker = L.marker([parseFloat(dataNode.lat), parseFloat(dataNode.lng)], {
+                    draggable: true,
+                    title: `Point ${dataNode.point}`
+                }).addTo(map);
+
+                // Modify marker appearance to look distinguishable
+                marker.setIcon(L.divIcon({
+                    className: 'custom-drag-node',
+                    html: `<div style="background:#FD7E14; width:10px; height:10px; border-radius:50%; border:1px solid #fff;"></div>`,
+                    iconSize: [10, 10]
+                }));
+
+                // Handle Drag End event to adjust polyline geometry and coordinate array logs
+                marker.on('dragend', function (e) {
+                    const changedLatLng = marker.getLatLng();
+                    
+                    // Update main technical array records live
+                    surveyData[index].lat = changedLatLng.lat.toFixed(6);
+                    surveyData[index].lng = changedLatLng.lng.toFixed(6);
+                    surveyData[index].remarks += " (Manually Corrected/Dragged)";
+                    
+                    // Recalculate polyline string geometries
+                    refreshPolylineGeometry();
+                    document.getElementById("correctionStatus").innerText = `Point ${dataNode.point} updated successfully!`;
+                });
+
+                correctionMarkers.push(marker);
+            });
+
+            // Adjust view boundaries
+            const bounds = polyline.getBounds();
+            if (bounds.isValid()) map.fitBounds(bounds);
+        }
+
+        function refreshPolylineGeometry() {
+            const updatedCoordinates = surveyData.map(node => [parseFloat(node.lat), parseFloat(node.lng)]);
+            polyline.setLatLngs(updatedCoordinates);
+        }
+
+        // --- NOTE-CAM WATERMARK CAMERA PROCESSING ---
+        function capturePhoto() {
+            const fileInput = document.getElementById('cameraInput');
+            if(fileInput.files.length === 0) return;
+
+            document.getElementById('status').innerText = "Status: Watermarking Photo... ⌛";
+
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        
+                        const dmsLat = convertDecToDMS(lat, true);
+                        const dmsLng = convertDecToDMS(lng, false);
+                        const dateStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+                        const timeStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                        const altStr = position.coords.altitude ? position.coords.altitude.toFixed(1) + ' m' : '12.71±6 m';
+
+                        const lines = [
+                            `Latitude: ${dmsLat}`, `Longitude: ${dmsLng}`,
+                            `Elevation: ${altStr}`, `Accuracy: ${accuracy.toFixed(1)} m`,
+                            `Date: ${dateStr}`, `Time: ${timeStr}`
+                        ];
+
+                        const fontSize = Math.max(canvas.width * 0.022, 14);
+                        ctx.font = `${fontSize}px monospace`;
+                        const lineHeight = fontSize * 1.3;
+                        let maxLineWidth = 0;
+                        lines.forEach(line => maxLineWidth = Math.max(maxLineWidth, ctx.measureText(line).width));
+                        
+                        const margin = fontSize * 0.6;
+                        const boxWidth = maxLineWidth + (margin * 2);
+                        const boxHeight = (lines.length * lineHeight) + (margin * 2);
+                        
+                        // Reference standard: bottom left dark semi-transparent plate box container
+                        ctx.fillStyle = "rgba(0,0,0,0.45)";
+                        ctx.fillRect(margin, canvas.height - boxHeight - margin, boxWidth, boxHeight);
+                        
+                        ctx.fillStyle = "white";
+                        ctx.textBaseline = "top";
+                        lines.forEach((line, index) => {
+                            ctx.fillText(line, margin + margin, (canvas.height - boxHeight - margin) + margin + (index * lineHeight));
+                        });
+
+                        const roadNameSafe = document.getElementById("attrRoadName").value.trim() || "Road";
+                        downloadFileUrl(canvas.toDataURL('image/jpeg', 0.9), `IMAGE_${roadNameSafe}_Point${pointCounter}.jpg`);
+
+                        L.circleMarker([lat, lng], { radius: 9, fillColor: "#FFC107", color: "#000", weight: 2, fillOpacity: 0.9 }).addTo(map);
+
+                        surveyData.push({ 
+                            point: pointCounter++, lat: lat.toFixed(6), lng: lng.toFixed(6), 
+                            alt: altStr, accuracy: accuracy.toFixed(1), time: timeStr, 
+                            type: "Photo Point", remarks: `Photo Taken: IMAGE_${roadNameSafe}_Point${pointCounter}.jpg`
+                        });
+                        document.getElementById('status').innerText = "Status: Image Captured ✔";
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }, () => alert("GPS Error during camera capture functionality."), { enableHighAccuracy: true });
+        }
+
+        // --- MATHS & EXPORT ENGINES ---
+        function getDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371000; 
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+        }
+
+        function convertDecToDMS(dd, isLat) {
+            const absolute = Math.abs(dd); const degrees = Math.floor(absolute);
+            const minNotTruncated = (absolute - degrees) * 60; const minutes = Math.floor(minNotTruncated);
+            const seconds = Math.floor((minNotTruncated - minutes) * 60);
+            return `${degrees}°${minutes}'${seconds}" ${isLat ? (dd >= 0 ? "N" : "S") : (dd >= 0 ? "E" : "W")}`;
+        }
+
+        // PANEL 2 - EXPORT EXCEL OPTION 1: ROAD METADATA ATTRIBUTES
+        function exportRoadDetailsExcel() {
+            const rName = document.getElementById("attrRoadName").value || "N/A";
+            const rCode = document.getElementById("attrRoadCode").value || "N/A";
+            const cWay = document.getElementById("attrCarriageway").value || "N/A";
+            const emb = document.getElementById("attrEmbankment").value || "N/A";
+            const rLen = document.getElementById("attrRoadLength").value || "N/A";
+            const rwWidth = document.getElementById("attrRoadwayWidth").value || "N/A";
+            const rem = document.getElementById("attrRemarks").value || "N/A";
+
+            let csv = "Parameter,Details/Values\n";
+            csv += `Surveyor Name,${currentUser}\n`;
+            csv += `Road Name / ID,"${rName}"\n`;
+            csv += `Road Code,"${rCode}"\n`;
+            csv += `Carriageway Details,"${cWay}"\n`;
+            csv += `Embankment Structural State,"${emb}"\n`;
+            csv += `Total Road Length (km),${rLen}\n`;
+            csv += `Roadway Total Width (m),${rwWidth}\n`;
+            csv += `Structural Remarks,"${rem}"\n`;
+
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            downloadFileUrl(URL.createObjectURL(blob), `Road_Structural_Details_${rName}.csv`);
+        }
+
+        // PANEL 2 - EXPORT EXCEL OPTION 2: FULL COORDINATE RECORDS
+        function exportAllPointsExcel() {
+            if (surveyData.length === 0) { alert("No points captured to export!"); return; }
+            const rName = document.getElementById("attrRoadName").value || "Road";
+            let csv = "Point,Latitude,Longitude,Elevation(m),Accuracy(m),Time,Type,Remarks/Note\n";
+            surveyData.forEach(r => {
+                csv += `${r.point},${r.lat},${r.lng},${r.alt},${r.accuracy},${r.time},${r.type},"${r.remarks}"\n`;
+            });
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            downloadFileUrl(URL.createObjectURL(blob), `Survey_Points_Data_${rName}.csv`);
+        }
+
+        // KML EXPORT ENGINE
+        function exportKML() {
+            if (surveyData.length === 0) { alert("No vector dataset found!"); return; }
+            const rName = document.getElementById("attrRoadName").value || "Road";
+            let kmlCoords = "", placemarks = "";
+            surveyData.forEach(r => {
+                let altVal = r.alt === 'N/A' ? 0 : parseFloat(r.alt) || 0;
+                kmlCoords += `${r.lng},${r.lat},${altVal}\n`;
+                if (r.type !== "Route Point") {
+                    placemarks += `<Placemark><name>Pt ${r.point} [${r.type}]</name><description>${r.remarks}</description><Point><coordinates>${r.lng},${r.lat},${altVal}</coordinates></Point></Placemark>`;
+                }
+            });
+
+            let kml = `<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>${rName} Alignment</name><Placemark><name>Path Centerline</name><LineString><tessellate>1</tessellate><coordinates>${kmlCoords}</coordinates></LineString></Placemark>${placemarks}</Document></kml>`;
+            const blob = new Blob([kml], { type: "application/vnd.google-earth.kml+xml" });
+            downloadFileUrl(URL.createObjectURL(blob), `Alignment_${rName}.kml`);
+        }
+
+        function downloadFileUrl(url, fileName) {
+            const a = document.createElement("a"); a.href = url; a.download = fileName;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+    </script>
 </body>
 </html>
