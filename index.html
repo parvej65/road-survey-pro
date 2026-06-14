@@ -3,1175 +3,2581 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Alliance Road Survey Pro 6.1</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Road Survey Pro 8.0</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #22263a;
-    --border: #2e3348;
-    --accent: #3b82f6;
-    --accent2: #10b981;
-    --warn: #f59e0b;
-    --danger: #ef4444;
-    --cyan: #06b6d4;
-    --text: #e2e8f0;
-    --text2: #94a3b8;
-    --text3: #64748b;
-    --radius: 10px;
-    --font: 'Inter', sans-serif;
-    --mono: 'JetBrains Mono', monospace;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+:root {
+  --bg:       #ffffff;
+  --s1:       #f4f8fd;
+  --s2:       #e9f0fb;
+  --s3:       #dbe7fa;
+  --border:   #d3e2f7;
+  --border2:  #b7cdf2;
+  --blue:     #1d4ed8;
+  --blue2:    #1e40af;
+  --green:    #059669;
+  --green2:   #047857;
+  --yellow:   #d97706;
+  --red:      #dc2626;
+  --cyan:     #0891b2;
+  --purple:   #7c3aed;
+  --orange:   #ea580c;
+  --text:     #14213d;
+  --text2:    #5b6b8c;
+  --text3:    #94a7c7;
+  --font:     'Inter', sans-serif;
+  --mono:     'JetBrains Mono', monospace;
+  --radius:   10px;
+  --radius2:  14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-  /* ─── LOGIN ─── */
-  #loginScreen {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-height: 100vh; padding: 24px;
-    background: radial-gradient(ellipse at 50% 0%, #1a2a4a 0%, var(--bg) 70%);
-  }
-  .login-card {
-    width: 100%; max-width: 380px;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 16px; padding: 36px 28px;
-  }
-  .login-logo { text-align: center; margin-bottom: 28px; }
-  .login-logo .icon { font-size: 42px; display: block; margin-bottom: 8px; }
-  .login-logo h1 { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
-  .login-logo p { font-size: 12px; color: var(--text2); margin-top: 4px; }
-  .login-card label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .login-card .field { margin-bottom: 16px; }
-  .login-card input { width: 100%; padding: 11px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 15px; font-family: var(--font); outline: none; transition: border-color 0.2s; }
-  .login-card input:focus { border-color: var(--accent); }
-  .btn-login { width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
-  .btn-login:hover { background: #2563eb; }
-  #loginError { color: var(--danger); font-size: 13px; text-align: center; margin-top: 12px; display: none; }
+/* ══ LOGIN ══ */
+#loginScreen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;padding:20px;
+  background:radial-gradient(ellipse 80% 60% at 50% -10%, #dbe7fb 0%, var(--bg) 70%);
+}
+.login-wrap{width:100%;max-width:420px;}
+.login-brand{text-align:center;margin-bottom:32px;}
+.login-brand .brand-icon{
+  width:64px;height:64px;border-radius:16px;margin:0 auto 14px;
+  background:linear-gradient(135deg,#1e3a8a,#3b82f6);
+  display:flex;align-items:center;justify-content:center;font-size:30px;
+  box-shadow:0 8px 32px rgba(59,130,246,0.3);
+}
+.login-brand h1{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+.login-brand p{font-size:12px;color:var(--text2);margin-top:4px;letter-spacing:0.3px;}
+.login-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--radius2);
+  padding:28px;
+}
+.user-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.user-tile{
+  background:var(--s2);border:2px solid var(--border);border-radius:10px;
+  padding:12px 10px;cursor:pointer;text-align:center;transition:all 0.2s;
+}
+.user-tile:hover,.user-tile.selected{border-color:var(--blue);background:rgba(59,130,246,0.1);}
+.user-tile .u-icon{font-size:24px;margin-bottom:4px;}
+.user-tile .u-name{font-size:12px;font-weight:700;color:var(--text);}
+.user-tile .u-role{font-size:10px;color:var(--text2);}
+.login-divider{font-size:11px;color:var(--text3);text-align:center;margin:14px 0;letter-spacing:0.5px;text-transform:uppercase;}
+.l-field{margin-bottom:14px;}
+.l-field label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;}
+.l-field input{
+  width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-size:14px;font-family:var(--font);outline:none;
+  transition:border-color 0.2s;
+}
+.l-field input:focus{border-color:var(--blue);}
+.btn-login{
+  width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:8px;
+  font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:0.2px;
+}
+.btn-login:hover{background:var(--blue2);}
+#loginError{color:var(--red);font-size:13px;text-align:center;margin-top:10px;display:none;}
+.login-note{text-align:center;margin-top:16px;font-size:11px;color:var(--text3);}
 
-  /* ─── MAIN APP ─── */
-  #mainApp { display: none; flex-direction: column; height: 100vh; }
+/* ══ MAIN APP ══ */
+#mainApp{display:none;flex-direction:column;height:100vh;}
 
-  /* ─── HEADER ─── */
-  .app-header {
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0; z-index: 200;
-  }
-  .app-header .left { display: flex; align-items: center; gap: 10px; }
-  .app-header .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); animation: pulse-dot 2s infinite; }
-  @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
-  .app-header h2 { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
-  .road-badge { font-size: 11px; color: var(--text2); background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 2px 8px; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .gps-pill {
-    font-family: var(--mono); font-size: 10px; padding: 4px 9px; border-radius: 20px;
-    border: 1px solid var(--border); background: var(--bg); display: flex; align-items: center; gap: 5px;
-  }
-  .gps-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
-  .gps-dot.good { background: var(--accent2); box-shadow: 0 0 6px #10b981; }
-  .gps-dot.ok { background: var(--warn); }
-  .gps-dot.bad { background: var(--danger); }
+/* ══ HEADER ══ */
+.app-header{
+  background:var(--s1);border-bottom:1px solid var(--border);
+  padding:0 14px;height:52px;display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;z-index:200;
+}
+.hdr-left{display:flex;align-items:center;gap:10px;}
+.hdr-logo{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,#1e3a8a,#3b82f6);
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+}
+.hdr-title{font-size:13px;font-weight:800;letter-spacing:-0.2px;}
+.hdr-road{
+  font-size:11px;color:var(--text2);background:var(--bg);border:1px solid var(--border);
+  border-radius:5px;padding:2px 9px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.hdr-right{display:flex;align-items:center;gap:8px;}
+.gps-pill{
+  font-family:var(--mono);font-size:10px;padding:4px 9px;border-radius:20px;
+  border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;gap:5px;
+}
+.gps-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:all 0.4s;}
+.gps-dot.good{background:var(--green);box-shadow:0 0 6px var(--green);}
+.gps-dot.ok{background:var(--yellow);}
+.gps-dot.bad{background:var(--red);}
+.user-badge{
+  font-size:10px;font-weight:600;padding:3px 9px;border-radius:5px;
+  background:var(--s3);border:1px solid var(--border);color:var(--blue);
+}
 
-  /* ─── NAV TABS ─── */
-  .nav-bar {
-    display: flex; background: var(--surface); border-bottom: 1px solid var(--border);
-    flex-shrink: 0; overflow-x: auto; scrollbar-width: none;
-  }
-  .nav-bar::-webkit-scrollbar { display: none; }
-  .nav-tab {
-    flex: 1; min-width: 70px; padding: 11px 8px; text-align: center; cursor: pointer;
-    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px;
-    color: var(--text3); border-bottom: 2px solid transparent; white-space: nowrap;
-    transition: all 0.2s;
-  }
-  .nav-tab .tab-icon { display: block; font-size: 18px; margin-bottom: 2px; }
-  .nav-tab:hover { color: var(--text2); background: var(--surface2); }
-  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--surface2); }
+/* ══ NAV ══ */
+.nav-bar{
+  display:flex;align-items:center;justify-content:flex-start;
+  background:var(--s1);border-bottom:1px solid var(--border);
+  flex-shrink:0;padding:9px 12px;
+}
+.nav-select{
+  padding:9px 14px;background:var(--bg);border:1px solid var(--border2);
+  color:var(--blue2);border-radius:8px;font-size:12.5px;font-weight:700;
+  font-family:var(--font);text-transform:uppercase;letter-spacing:0.5px;
+  outline:none;cursor:pointer;min-width:170px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%231d4ed8'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  -webkit-appearance:none;appearance:none;padding-right:30px;
+}
+.nav-select:focus{border-color:var(--blue);}
 
-  /* ─── PANELS ─── */
-  .panels-wrap { flex: 1; overflow: hidden; position: relative; }
-  .panel { display: none; height: 100%; overflow-y: auto; padding: 14px 14px 80px; }
-  .panel.active { display: block; }
-  .panel::-webkit-scrollbar { width: 4px; }
-  .panel::-webkit-scrollbar-track { background: transparent; }
-  .panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+/* ══ PANELS ══ */
+.panels-wrap{flex:1;overflow:hidden;position:relative;}
+.panel{display:none;height:100%;overflow-y:auto;padding:12px 12px 80px;}
+.panel.active{display:block;}
+.panel::-webkit-scrollbar{width:3px;}
+.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 
-  /* ─── CARDS ─── */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
-  .card-title { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+/* ══ CARDS ══ */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:13px;margin-bottom:10px;}
+.card-h{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.card-h .ch-icon{font-size:14px;}
 
-  /* ─── STATUS BAR ─── */
-  .status-bar {
-    display: flex; align-items: center; gap: 8px; padding: 10px 13px;
-    border-radius: var(--radius); margin-bottom: 12px; font-size: 13px; font-weight: 500;
-    border: 1px solid var(--border); background: var(--surface2);
-    transition: all 0.3s;
-  }
-  .status-bar.standby { border-color: var(--border); }
-  .status-bar.tracking { border-color: var(--accent2); background: rgba(16,185,129,0.08); color: var(--accent2); }
-  .status-bar.error { border-color: var(--danger); background: rgba(239,68,68,0.08); color: var(--danger); }
-  .status-bar.warn { border-color: var(--warn); background: rgba(245,158,11,0.08); color: var(--warn); }
-  .status-icon { font-size: 16px; flex-shrink: 0; }
+/* ══ GPS ACCURACY VISUAL ══ */
+.acc-ring-wrap{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+.acc-ring{position:relative;width:80px;height:80px;flex-shrink:0;}
+.acc-ring svg{transform:rotate(-90deg);}
+.acc-ring .ring-val{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:16px;font-weight:700;
+}
+.acc-ring .ring-lbl{font-size:8px;color:var(--text3);letter-spacing:0.3px;}
+.acc-stats{flex:1;}
+.acc-stat-row{display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px;}
+.acc-stat-row .asl{color:var(--text2);}
+.acc-stat-row .asv{font-family:var(--mono);font-weight:600;}
 
-  /* ─── METRICS ROW ─── */
-  .metrics-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
-  .metric-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 8px; text-align: center; }
-  .metric-val { font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--text); display: block; }
-  .metric-lbl { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; display: block; }
+/* ══ METRICS ══ */
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px;}
+.metric-box{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:9px 6px;text-align:center;}
+.m-val{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--text);display:block;line-height:1;}
+.m-lbl{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px;display:block;}
 
-  /* ─── ACCURACY METER ─── */
-  .accuracy-bar-wrap { margin-bottom: 12px; }
-  .accuracy-bar-track { height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; margin-top: 5px; }
-  .accuracy-bar-fill { height: 100%; width: 0%; border-radius: 3px; transition: width 0.5s, background 0.5s; background: var(--accent2); }
+/* ══ STATUS BAR ══ */
+.status-bar{
+  display:flex;align-items:center;gap:9px;padding:10px 13px;
+  border-radius:var(--radius);margin-bottom:10px;font-size:12px;font-weight:600;
+  border:1px solid var(--border);background:var(--s2);transition:all 0.3s;
+}
+.status-bar.tracking{border-color:var(--green);background:rgba(16,185,129,0.08);color:var(--green);}
+.status-bar.error{border-color:var(--red);background:rgba(239,68,68,0.08);color:var(--red);}
+.status-bar.warn{border-color:var(--yellow);background:rgba(245,158,11,0.08);color:var(--yellow);}
+.status-bar.averaging{border-color:var(--cyan);background:rgba(6,182,212,0.08);color:var(--cyan);}
+.status-icon{font-size:16px;flex-shrink:0;}
 
-  /* ─── BUTTONS ─── */
-  .btn { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: var(--font); }
-  .btn + .btn { margin-top: 8px; }
-  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover:not(:disabled) { background: #2563eb; }
-  .btn-stop { background: var(--danger); color: #fff; }
-  .btn-stop:hover:not(:disabled) { background: #dc2626; }
-  .btn-success { background: var(--accent2); color: #fff; }
-  .btn-success:hover:not(:disabled) { background: #059669; }
-  .btn-warn { background: var(--warn); color: #000; }
-  .btn-warn:hover:not(:disabled) { background: #d97706; }
-  .btn-cyan { background: var(--cyan); color: #000; }
-  .btn-cyan:hover:not(:disabled) { background: #0891b2; color:#fff; }
-  .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .btn-ghost:hover:not(:disabled) { background: var(--border); }
-  .btn-sm { padding: 8px 12px; font-size: 12px; width: auto; }
+/* ══ BUTTONS ══ */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;width:100%;
+  padding:12px;border:none;border-radius:8px;font-size:13px;font-weight:700;
+  cursor:pointer;transition:all 0.2s;font-family:var(--font);letter-spacing:0.1px;
+}
+.btn+.btn{margin-top:7px;}
+.btn:disabled{opacity:0.3;cursor:not-allowed;}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary:hover:not(:disabled){background:var(--blue2);}
+.btn-stop{background:var(--red);color:#fff;}
+.btn-stop:hover:not(:disabled){background:#dc2626;}
+.btn-success{background:var(--green);color:#fff;}
+.btn-success:hover:not(:disabled){background:var(--green2);}
+.btn-warn{background:var(--yellow);color:#000;}
+.btn-warn:hover:not(:disabled){background:#d97706;}
+.btn-cyan{background:var(--cyan);color:#000;font-weight:700;}
+.btn-cyan:hover:not(:disabled){background:#0891b2;color:#fff;}
+.btn-purple{background:var(--purple);color:#fff;}
+.btn-purple:hover:not(:disabled){background:#7c3aed;}
+.btn-orange{background:var(--orange);color:#fff;}
+.btn-orange:hover:not(:disabled){background:#ea580c;}
+.btn-ghost{background:var(--s2);color:var(--text);border:1px solid var(--border);}
+.btn-ghost:hover:not(:disabled){background:var(--border);}
+.btn-sm{padding:7px 12px;font-size:11px;width:auto;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-row > .btn{margin-top:0;}
 
-  /* ─── INPUTS ─── */
-  .form-field { margin-bottom: 12px; }
-  .form-field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
-  .form-field input, .form-field select, .form-field textarea {
-    width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; color: var(--text); font-size: 14px; font-family: var(--font); outline: none;
-    transition: border-color 0.2s;
-  }
-  .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: var(--accent); }
-  .form-field select option { background: var(--surface); }
-  .form-field textarea { resize: vertical; min-height: 70px; }
-  input[type="file"] { display: none; }
+/* ══ FORMS ══ */
+.form-field{margin-bottom:11px;}
+.form-field label{display:block;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
+.form-field input,.form-field select,.form-field textarea{
+  width:100%;padding:9px 12px;background:var(--bg);border:1px solid var(--border);
+  border-radius:7px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;
+  transition:border-color 0.2s;
+}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--blue);}
+.form-field select option{background:var(--s1);}
+.form-field textarea{resize:vertical;min-height:64px;line-height:1.5;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 
-  /* ─── MAP ─── */
-  #mapPanel1 { height: 42vh; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); margin-bottom: 12px; }
+/* ══ MAP ══ */
+#map1,.map-full{height:44vh;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);margin-bottom:10px;}
+#map4{height:calc(100vh - 200px);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);}
+.leaflet-container{background:#dbe6f7;}
+.map-ctrl-bar{display:flex;gap:7px;margin-bottom:8px;align-items:center;}
+.map-ctrl-bar select{
+  padding:5px 10px;background:var(--bg);border:1px solid var(--border);
+  color:var(--text);border-radius:7px;font-size:12px;font-family:var(--font);outline:none;flex:1;
+}
 
-  /* ─── TOWER CROSSCHECK ─── */
-  .tower-list { max-height: 160px; overflow-y: auto; }
-  .tower-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 10px; border-radius: 7px; background: var(--bg); border: 1px solid var(--border);
-    margin-bottom: 6px; font-size: 12px;
-  }
-  .tower-item .t-name { font-weight: 600; color: var(--text); }
-  .tower-item .t-dist { font-family: var(--mono); font-size: 11px; color: var(--text2); }
-  .tower-item .t-bearing { color: var(--warn); font-size: 10px; }
-  .tower-item .t-type { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
-  .tower-item .t-type.cell { background: rgba(59,130,246,0.15); color: var(--accent); }
-  .tower-item .t-type.tower { background: rgba(245,158,11,0.15); color: var(--warn); }
-  .tower-item .t-type.ref { background: rgba(16,185,129,0.15); color: var(--accent2); }
+/* ══ POINT LOG ══ */
+.point-log{max-height:220px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);}
+.point-row{
+  display:flex;align-items:center;gap:7px;padding:7px 10px;
+  border-bottom:1px solid var(--border);font-size:11px;font-family:var(--mono);
+  transition:background 0.15s;
+}
+.point-row:last-child{border-bottom:none;}
+.point-row:hover{background:var(--s2);}
+.pt-num{color:var(--text3);min-width:28px;font-size:10px;}
+.pt-coord{flex:1;color:var(--text2);font-size:10px;}
+.pt-acc{color:var(--text3);font-size:10px;min-width:44px;text-align:right;}
+.pt-badge{font-size:8px;padding:2px 5px;border-radius:4px;text-transform:uppercase;font-weight:700;white-space:nowrap;}
+.badge-route{background:rgba(59,130,246,0.15);color:var(--blue);}
+.badge-manual{background:rgba(239,68,68,0.15);color:var(--red);}
+.badge-start{background:rgba(16,185,129,0.2);color:var(--green);}
+.badge-end{background:rgba(245,158,11,0.2);color:var(--yellow);}
+.badge-chainage{background:rgba(139,92,246,0.15);color:var(--purple);}
 
-  /* ─── ROAD CORRECTION ─── */
-  .correction-controls { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-  .point-log { max-height: 200px; overflow-y: auto; }
-  .point-row {
-    display: flex; align-items: center; gap: 8px; padding: 7px 10px;
-    border-bottom: 1px solid var(--border); font-size: 12px; font-family: var(--mono);
-  }
-  .point-row:last-child { border-bottom: none; }
-  .point-row .pt-num { color: var(--text3); min-width: 30px; }
-  .point-row .pt-coord { flex: 1; color: var(--text2); }
-  .point-row .pt-type { font-size: 9px; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; }
-  .pt-type.route { background: rgba(59,130,246,0.15); color: var(--accent); }
-  .pt-type.manual { background: rgba(239,68,68,0.15); color: var(--danger); }
-  .pt-type.photo { background: rgba(245,158,11,0.15); color: var(--warn); }
+/* ══ ACCURACY AVERAGING PROGRESS ══ */
+.avg-progress-wrap{margin:8px 0;display:none;}
+.avg-bar-track{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;}
+.avg-bar-fill{height:100%;width:0%;background:var(--cyan);border-radius:3px;transition:width 0.3s;}
+.avg-count{font-size:11px;color:var(--cyan);text-align:center;margin-top:4px;font-family:var(--mono);}
 
-  /* ─── PHOTO FILE BTN ─── */
-  .photo-label {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%; padding: 12px; border-radius: 8px; background: var(--warn); color: #000;
-    font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font);
-    transition: background 0.2s;
-  }
-  .photo-label:hover { background: #d97706; }
+/* ══ CHAINAGE DISPLAY ══ */
+.chainage-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);
+  border-radius:6px;padding:4px 10px;font-family:var(--mono);font-size:12px;color:var(--purple);
+  font-weight:700;
+}
 
-  /* ─── EXPORT SECTION ─── */
-  .export-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+/* ══ PHOTO CAPTURE ══ */
+.photo-label{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:11px;border-radius:8px;background:var(--yellow);color:#000;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all 0.2s;
+}
+.photo-label:hover{background:#d97706;}
+input[type="file"]{display:none;}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;}
+.photo-thumb{
+  aspect-ratio:1;border-radius:6px;overflow:hidden;border:1px solid var(--border);
+  cursor:pointer;position:relative;background:var(--s2);
+}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;}
+.photo-thumb .ph-label{
+  position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);
+  padding:3px 5px;font-size:8px;color:#e8f0fd;font-family:var(--mono);
+}
 
-  /* ─── NOTIFICATIONS ─── */
-  #toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: var(--surface); border: 1px solid var(--border); color: var(--text);
-    padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 500;
-    z-index: 9999; white-space: nowrap; transition: transform 0.3s;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  }
-  #toast.show { transform: translateX(-50%) translateY(0); }
+/* ══ EXPORT PANEL ══ */
+.export-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.survey-summary{
+  background:var(--s2);border-radius:8px;padding:12px;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;
+}
+.sum-item{text-align:center;}
+.sum-val{font-family:var(--mono);font-size:17px;font-weight:800;color:var(--text);}
+.sum-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;}
 
-  /* ─── MISC ─── */
-  .divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
-  .section-gap { margin-bottom: 10px; }
+/* ══ DRIVE SYNC CARD ══ */
+.sync-card{
+  background:linear-gradient(135deg,#eaf2ff,#dbe9fd);
+  border:1px solid rgba(29,78,216,0.25);border-radius:var(--radius);
+  padding:12px;margin-bottom:10px;
+}
+.sync-card .sync-h{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
+}
+.sync-h-title{font-size:11px;font-weight:700;color:var(--green);}
 
-  /* ─── LEAFLET DARK OVERRIDE ─── */
-  .leaflet-container { background: #12151e; }
-  .leaflet-popup-content-wrapper { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 10px; }
-  .leaflet-popup-tip { background: var(--surface); }
-  .leaflet-control-zoom a { background: var(--surface2) !important; color: var(--text) !important; border-color: var(--border) !important; }
-  .leaflet-bar { border: 1px solid var(--border) !important; }
+/* ══ TOAST ══ */
+#toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--blue2);border:1px solid var(--blue);color:#fff;
+  padding:9px 20px;border-radius:30px;font-size:13px;font-weight:600;
+  z-index:9999;white-space:nowrap;transition:transform 0.3s;
+  box-shadow:0 4px 24px rgba(29,78,216,0.35);
+}
+#toast.show{transform:translateX(-50%) translateY(0);}
 
-  /* ─── PANEL 4 (KML/Settings) ─── */
-  .kml-preview { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-family: var(--mono); font-size: 10px; color: var(--text2); max-height: 120px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+/* ══ ADMIN MODAL ══ */
+#adminModal{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:8000;
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+#adminModal.open{display:flex;}
+.modal-box{
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--radius2);
+  width:100%;max-width:480px;max-height:80vh;overflow-y:auto;
+}
+.modal-header{
+  padding:16px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-header h3{font-size:14px;font-weight:700;}
+.modal-close{background:none;border:none;color:var(--text2);cursor:pointer;font-size:20px;line-height:1;}
+.modal-body{padding:16px 18px;}
+.user-row{
+  display:flex;align-items:center;gap:10px;padding:10px;
+  background:var(--s2);border-radius:8px;margin-bottom:8px;
+}
+.ur-icon{font-size:22px;}
+.ur-info{flex:1;}
+.ur-name{font-size:13px;font-weight:700;}
+.ur-role{font-size:10px;color:var(--text2);}
+.ur-pass{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.role-tag{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;}
+.role-admin{background:rgba(239,68,68,0.2);color:var(--red);}
+.role-surveyor{background:rgba(59,130,246,0.2);color:var(--blue);}
+.role-viewer{background:rgba(100,116,139,0.2);color:var(--text2);}
 
-  .signal-bars { display: flex; align-items: flex-end; gap: 2px; height: 18px; }
-  .signal-bar { width: 4px; border-radius: 2px; background: var(--border); }
-  .signal-bar.lit { background: var(--accent2); }
+/* ══ CONDITION RADIO ══ */
+.cond-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:5px;}
+.cond-btn{
+  padding:8px 4px;border:1px solid var(--border);border-radius:7px;
+  text-align:center;cursor:pointer;font-size:10px;font-weight:700;
+  transition:all 0.2s;background:var(--s2);color:var(--text2);
+}
+.cond-btn.sel-good{border-color:var(--green);background:rgba(16,185,129,0.15);color:var(--green);}
+.cond-btn.sel-fair{border-color:var(--yellow);background:rgba(245,158,11,0.15);color:var(--yellow);}
+.cond-btn.sel-poor{border-color:var(--red);background:rgba(239,68,68,0.15);color:var(--red);}
 
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+/* ══ MARK POINT BUTTON (big) ══ */
+.mark-btn-wrap{position:relative;margin-bottom:10px;}
+.btn-mark-point{
+  width:100%;padding:18px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);
+  color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:800;
+  cursor:pointer;transition:all 0.2s;font-family:var(--font);letter-spacing:0.2px;
+  box-shadow:0 4px 20px rgba(59,130,246,0.4);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-mark-point:hover:not(:disabled){background:linear-gradient(135deg,#1e40af,#2563eb);}
+.btn-mark-point:disabled{opacity:0.3;cursor:not-allowed;box-shadow:none;}
+.mark-avg-wrap{
+  background:var(--s2);border:1px solid var(--border);border-radius:8px;
+  padding:10px 13px;margin-top:6px;display:none;
+}
+.avg-label{font-size:11px;color:var(--cyan);font-weight:600;margin-bottom:6px;}
+
+/* ══ CORRECTION PANEL ══ */
+.corr-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;}
+
+/* ══ HEADING INDICATOR ══ */
+.hdg-row{display:flex;align-items:center;gap:8px;margin-top:6px;}
+.hdg-compass{
+  width:36px;height:36px;border-radius:50%;border:2px solid var(--border);
+  background:var(--s2);display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;position:relative;
+}
+.hdg-val{font-family:var(--mono);font-size:11px;color:var(--text2);}
+
+/* ══ SEGMENT LOG ══ */
+.seg-row{
+  display:flex;align-items:center;gap:8px;padding:7px 10px;
+  border-bottom:1px solid var(--border);font-size:11px;
+}
+.seg-row:last-child{border-bottom:none;}
+.seg-ch{font-family:var(--mono);color:var(--purple);min-width:60px;font-size:10px;font-weight:600;}
+.seg-info{flex:1;color:var(--text2);font-size:10px;}
+.seg-dist{font-family:var(--mono);color:var(--text3);font-size:10px;}
+
+/* ══ PROFILE CANVAS ══ */
+#profileCanvas{border-radius:8px;background:var(--s2);}
+.profile-hover{position:absolute;pointer-events:none;background:var(--blue2);color:#fff;padding:4px 8px;border-radius:5px;font-size:10px;font-family:var(--mono);white-space:nowrap;display:none;z-index:10;}
+
+/* ══ SCROLL FIX ══ */
+#panel2{padding-bottom:40px;}
 </style>
 </head>
 <body>
 
+<!-- ══════════ LOGIN ══════════ -->
 <div id="loginScreen">
-  <div class="login-card">
-    <div class="login-logo">
-      <span class="icon">🛣️</span>
-      <h1>Alliance Survey Pro</h1>
-      <p>Road Survey & GPS Alignment Tool v6.1</p>
+  <div class="login-wrap">
+    <div class="login-brand">
+      <div class="brand-icon">🛣️</div>
+      <h1>Road Survey Pro 7.0</h1>
+      <p>Alliance India Highway Mapping Engine</p>
     </div>
-    <div class="field">
-      <label>Login ID</label>
-      <input type="text" id="username" placeholder="Enter your login ID" autocomplete="username">
+    <div class="login-card">
+      <div class="login-divider">Select User</div>
+      <div class="user-grid" id="userGrid"></div>
+      <div class="login-divider">Or enter credentials</div>
+      <div class="l-field">
+        <label>Username</label>
+        <input type="text" id="username" autocomplete="username" placeholder="Enter username">
+      </div>
+      <div class="l-field">
+        <label>Password</label>
+        <input type="password" id="password" autocomplete="current-password" placeholder="Enter password"
+          onkeydown="if(event.key==='Enter')processLogin()">
+      </div>
+      <button class="btn-login" onclick="processLogin()">Sign In →</button>
+      <p id="loginError">⚠ Invalid credentials. Try again.</p>
+      <p class="login-note">Version 7.0 — GPS Averaging + Curve-Aware KML</p>
     </div>
-    <div class="field">
-      <label>Password</label>
-      <input type="password" id="password" placeholder="Enter password" autocomplete="current-password"
-        onkeydown="if(event.key==='Enter')processLogin()">
-    </div>
-    <button class="btn-login" onclick="processLogin()">Sign In →</button>
-    <p id="loginError">⚠ Invalid credentials. Try again.</p>
   </div>
 </div>
 
+<!-- ══════════ MAIN APP ══════════ -->
 <div id="mainApp">
 
+  <!-- HEADER -->
   <div class="app-header">
-    <div class="left">
-      <div class="logo-dot" id="trackingDot"></div>
-      <h2>Alliance Survey</h2>
-      <div class="road-badge" id="headerRoadName">No road set</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div class="signal-bars" id="signalBars">
-        <div class="signal-bar" style="height:4px"></div>
-        <div class="signal-bar" style="height:7px"></div>
-        <div class="signal-bar" style="height:10px"></div>
-        <div class="signal-bar" style="height:14px"></div>
-        <div class="signal-bar" style="height:18px"></div>
+    <div class="hdr-left">
+      <div class="hdr-logo">🛣️</div>
+      <div>
+        <div class="hdr-title">Road Survey Pro</div>
+        <div class="hdr-road" id="headerRoadName">No road set</div>
       </div>
+    </div>
+    <div class="hdr-right">
+      <div class="user-badge" id="userBadge">—</div>
       <div class="gps-pill"><div class="gps-dot" id="gpsDot"></div><span id="gpsAccText">N/A</span></div>
+      <button onclick="openAdminModal()" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:17px;" title="Admin">⚙️</button>
     </div>
   </div>
 
+  <!-- NAV -->
   <div class="nav-bar">
-    <div class="nav-tab active" onclick="switchPanel(1)"><span class="tab-icon">📡</span>Survey</div>
-    <div class="nav-tab" onclick="switchPanel(2)"><span class="tab-icon">🗂️</span>Road Info</div>
-    <div class="nav-tab" onclick="switchPanel(3)"><span class="tab-icon">📶</span>Towers</div>
-    <div class="nav-tab" onclick="switchPanel(4)"><span class="tab-icon">✏️</span>Correct</div>
-    <div class="nav-tab" onclick="switchPanel(5)"><span class="tab-icon">⬇️</span>Export</div>
+    <select id="panelSelect" class="nav-select" onchange="switchPanel(parseInt(this.value))">
+      <option value="1">📡 Survey</option>
+      <option value="2">🗂️ Road Info</option>
+      <option value="3">✏️ Correct</option>
+      <option value="4">📋 Log</option>
+      <option value="5">⬇️ Export</option>
+      <option value="6">ℹ️ About</option>
+    </select>
   </div>
 
+  <!-- PANELS -->
   <div class="panels-wrap">
 
+    <!-- ═══ PANEL 1: SURVEY ═══ -->
     <div id="panel1" class="panel active">
 
+      <!-- Status -->
       <div class="status-bar standby" id="statusBar">
         <span class="status-icon">🔵</span>
         <span id="statusText">Standby — Press Start to begin tracking</span>
       </div>
 
+      <!-- GPS Accuracy Ring -->
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">📡</span>GPS Signal Quality</div>
+        <div class="acc-ring-wrap">
+          <div class="acc-ring">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#e1ebfb" stroke-width="7"/>
+              <circle id="accRingFill" cx="40" cy="40" r="34" fill="none" stroke="#10b981" stroke-width="7"
+                stroke-dasharray="213.6" stroke-dashoffset="213.6" stroke-linecap="round"/>
+            </svg>
+            <div class="ring-val">
+              <span id="ringAcc">—</span>
+              <span class="ring-lbl">metres</span>
+            </div>
+          </div>
+          <div class="acc-stats">
+            <div class="acc-stat-row"><span class="asl">Satellites</span><span class="asv" id="satCount">—</span></div>
+            <div class="acc-stat-row"><span class="asl">Altitude</span><span class="asv" id="altVal">—</span></div>
+            <div class="acc-stat-row"><span class="asl">Speed</span><span class="asv" id="speedVal">—</span></div>
+            <div class="acc-stat-row"><span class="asl">Heading</span><span class="asv" id="headingVal">—</span></div>
+          </div>
+        </div>
+        <div class="hdg-row">
+          <div class="hdg-compass" id="compassIcon">🧭</div>
+          <div>
+            <div style="font-size:10px;color:var(--text2);">Accuracy Class:</div>
+            <div id="accClass" style="font-size:12px;font-weight:700;color:var(--green);">Waiting…</div>
+          </div>
+          <div style="margin-left:auto;">
+            <div class="chainage-badge" id="chainageBadge">Ch: 0+000</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metrics -->
       <div class="metrics-row">
-        <div class="metric-box">
-          <span class="metric-val" id="metPts">0</span>
-          <span class="metric-lbl">Points</span>
-        </div>
-        <div class="metric-box">
-          <span class="metric-val" id="metDist">0.00</span>
-          <span class="metric-lbl">km</span>
-        </div>
-        <div class="metric-box">
-          <span class="metric-val" id="metAcc">—</span>
-          <span class="metric-lbl">Acc (m)</span>
-        </div>
+        <div class="metric-box"><span class="m-val" id="metPts">0</span><span class="m-lbl">Points</span></div>
+        <div class="metric-box"><span class="m-val" id="metDist">0.00</span><span class="m-lbl">km</span></div>
+        <div class="metric-box"><span class="m-val" id="metAcc">—</span><span class="m-lbl">Acc m</span></div>
+        <div class="metric-box"><span class="m-val" id="metCh">0+000</span><span class="m-lbl">Chainage</span></div>
       </div>
 
-      <div class="card accuracy-bar-wrap" style="padding:10px 14px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span class="card-title" style="margin-bottom:0;">GPS Signal Quality</span>
-          <span id="accLabel" style="font-size:11px;color:var(--text3);">Waiting…</span>
-        </div>
-        <div class="accuracy-bar-track">
-          <div class="accuracy-bar-fill" id="accBar"></div>
-        </div>
+      <!-- Map -->
+      <div class="map-ctrl-bar">
+        <span style="font-size:11px;color:var(--text2);font-weight:600;">🗺️ Map:</span>
+        <select id="mapStyleSelect" onchange="changeMapStyle(this.value)">
+          <option value="street" selected>Street Map</option>
+          <option value="satellite">Satellite + Labels</option>
+          <option value="esri">ESRI World Street</option>
+          <option value="topo">Topo (Carto)</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="centerMap()">🎯 Center</button>
       </div>
+      <div id="map1"></div>
 
-      <div id="mapPanel1"></div>
-
+      <!-- Tracking Controls -->
       <div class="card">
-        <div class="card-title">🎮 Tracking Controls</div>
-        <button class="btn btn-primary" id="startBtn" onclick="startTracking()">▶ Start GPS Tracking</button>
-        <button class="btn btn-stop" id="stopBtn" onclick="stopTracking()" disabled>⏹ Stop Tracking</button>
-        <button class="btn btn-cyan" onclick="centerMap()" style="margin-top:8px;">🎯 Re-center Map</button>
+        <div class="card-h"><span class="ch-icon">🎮</span>Tracking Controls</div>
+        <button class="btn btn-primary" id="startBtn" onclick="startTracking()">▶ AUTOMATIC</button>
+        <div class="btn-row" style="margin-top:7px;">
+          <button class="btn btn-stop" id="stopBtn" onclick="stopTracking()" disabled style="flex:1;">⏹ STOP</button>
+          <button class="btn btn-primary" id="markBtn" onclick="startMarkPoint()" disabled style="flex:1;background:linear-gradient(135deg,#dc2626,#ef4444);">
+            📍 MANUAL POINT
+          </button>
+        </div>
       </div>
 
+      <!-- GPS Averaging / Mark Point Settings -->
       <div class="card">
-        <div class="card-title">📷 Photo Capture (GPS Watermark)</div>
-        <label class="photo-label">
-          <input type="file" accept="image/*" capture="environment" id="cameraInput" onchange="capturePhoto()">
-          📷 Take Photo with GPS Stamp
-        </label>
-      </div>
-
-      <div class="card">
-        <div class="card-title">📍 Add Landmark / Point</div>
+        <div class="card-h"><span class="ch-icon">📝</span>Mark Point Settings</div>
         <div class="form-field">
           <label>Point Type</label>
           <select id="pointType">
-            <option value="Landmark">Landmark</option>
+            <option value="Start">Survey Start</option>
+            <option value="End">Survey End</option>
+            <option value="Chainage">Chainage Mark</option>
             <option value="Culvert">Culvert</option>
             <option value="Bridge">Bridge</option>
-            <option value="Intersection">Intersection</option>
-            <option value="Damage">Road Damage</option>
-            <option value="Tower">Cell Tower</option>
+            <option value="Intersection">Intersection / Junction</option>
+            <option value="CD Work">CD Work</option>
+            <option value="Retaining Wall">Retaining Wall</option>
+            <option value="Damaged">Road Damage</option>
+            <option value="Pothole">Pothole</option>
+            <option value="Landslide">Landslide / Erosion</option>
+            <option value="Drain">Drainage Structure</option>
+            <option value="Boundary">Boundary / ROW Post</option>
+            <option value="Electric Pole">Electric Pole</option>
+            <option value="School">School / Hospital</option>
+            <option value="Landmark">Landmark</option>
             <option value="Other">Other</option>
           </select>
         </div>
         <div class="form-field">
-          <label>Remarks</label>
+          <label>Remarks / Description</label>
           <input type="text" id="pointRemarks" placeholder="Describe this point…">
         </div>
-        <button class="btn btn-warn" onclick="addManualPoint()">📍 Add Point at Current Location</button>
+        <div class="form-field">
+          <label>Averaging Samples (higher = more accurate)</label>
+          <select id="avgSamples">
+            <option value="1">1 sample — Quick (no averaging)</option>
+            <option value="3" selected>3 samples — Standard (≈3 sec)</option>
+            <option value="5">5 samples — Better (≈5 sec)</option>
+            <option value="10">10 samples — High accuracy (≈10 sec)</option>
+            <option value="20">20 samples — Max accuracy (≈20 sec)</option>
+          </select>
+        </div>
+        <div class="mark-avg-wrap" id="markAvgWrap">
+          <div class="avg-label">📡 Averaging GPS — hold device steady…</div>
+          <div class="avg-bar-track"><div class="avg-bar-fill" id="avgBarFill"></div></div>
+          <div class="avg-count" id="avgCountText">0 / 0</div>
+        </div>
       </div>
-    </div>
 
-    <div id="panel2" class="panel">
+      <!-- Photo Capture -->
       <div class="card">
-        <div class="card-title">🗺️ Road Identity</div>
+        <div class="card-h"><span class="ch-icon">📷</span>Photo Capture (GPS Stamp)</div>
+        <label class="photo-label">
+          <input type="file" accept="image/*" capture="environment" id="cameraInput" onchange="capturePhoto()">
+          📷 Take Photo at Current Location
+        </label>
+        <div class="photo-grid" id="photoGrid"></div>
+      </div>
+
+    </div><!-- /panel1 -->
+
+    <!-- ═══ PANEL 2: ROAD INFO ═══ -->
+    <div id="panel2" class="panel">
+
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">🛣️</span>Road Identity</div>
         <div class="form-field">
           <label>Road Name / ID *</label>
           <input type="text" id="attrRoadName" placeholder="e.g. Burdwan–AHT Road" oninput="syncRoadName()">
         </div>
-        <div class="form-field">
-          <label>Road Code</label>
-          <input type="text" id="attrRoadCode" placeholder="e.g. WB-SH-02">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Road Code / No.</label>
+            <input type="text" id="attrRoadCode" placeholder="e.g. WB-SH-02" oninput="saveAttr()">
+          </div>
+          <div class="form-field">
+            <label>Road Type</label>
+            <select id="attrRoadType" onchange="saveAttr()">
+              <option>State Highway</option>
+              <option>National Highway</option>
+              <option>District Road</option>
+              <option>Rural Road (PMGSY)</option>
+              <option>Urban Road</option>
+              <option>Village Road</option>
+              <option>Forest Road</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>From Location</label>
+            <input type="text" id="attrFrom" placeholder="Starting village/town" oninput="saveAttr()">
+          </div>
+          <div class="form-field">
+            <label>To Location</label>
+            <input type="text" id="attrTo" placeholder="Ending village/town" oninput="saveAttr()">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>District</label>
+            <input type="text" id="attrDistrict" placeholder="District name" oninput="saveAttr()">
+          </div>
+          <div class="form-field">
+            <label>State</label>
+            <input type="text" id="attrState" placeholder="State name" oninput="saveAttr()">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Block / Mandal</label>
+            <input type="text" id="attrBlock" placeholder="Block name" oninput="saveAttr()">
+          </div>
+          <div class="form-field">
+            <label>Gram Panchayat</label>
+            <input type="text" id="attrGP" placeholder="GP name" oninput="saveAttr()">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Survey Date</label>
+            <input type="date" id="attrDate" oninput="saveAttr()">
+          </div>
+          <div class="form-field">
+            <label>Surveyor Name</label>
+            <input type="text" id="attrSurveyor" placeholder="Name" oninput="saveAttr()">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">📐</span>Structural Dimensions</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Carriageway Width (m)</label>
+            <input type="number" id="attrCWWidth" placeholder="e.g. 3.75" step="0.01" oninput="saveAttr()">
+          </div>
+          <div class="form-field">
+            <label>Total Roadway Width (m)</label>
+            <input type="number" id="attrRWWidth" placeholder="e.g. 7.5" step="0.01" oninput="saveAttr()">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Road Length (km)</label>
+            <input type="number" id="attrRoadLength" placeholder="e.g. 4.25" step="0.01" oninput="saveAttr()">
+          </div>
+          <div class="form-field">
+            <label>Number of Lanes</label>
+            <select id="attrLanes" onchange="saveAttr()">
+              <option>Single Lane</option>
+              <option>Intermediate Lane</option>
+              <option>Double Lane</option>
+              <option>4-Lane</option>
+              <option>6-Lane</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Embankment Height (m)</label>
+            <input type="number" id="attrEmbankment" placeholder="Avg height" step="0.1" oninput="saveAttr()">
+          </div>
+          <div class="form-field">
+            <label>Shoulder Width (m)</label>
+            <input type="number" id="attrShoulder" placeholder="e.g. 0.9" step="0.01" oninput="saveAttr()">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">🏗️</span>Surface & Pavement</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Surface Type</label>
+            <select id="attrSurface" onchange="saveAttr()">
+              <option>BT (Bituminous)</option>
+              <option>CC (Cement Concrete)</option>
+              <option>WBM</option>
+              <option>Gravel</option>
+              <option>Earthen / Kutcha</option>
+              <option>Interlocking Paver</option>
+              <option>Mixed</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Pavement Age (yrs)</label>
+            <input type="number" id="attrPavAge" placeholder="e.g. 5" oninput="saveAttr()">
+          </div>
         </div>
         <div class="form-field">
-          <label>Road Type</label>
-          <select id="attrRoadType">
-            <option>State Highway</option>
-            <option>District Road</option>
-            <option>Rural Road (PMGSY)</option>
-            <option>Urban Road</option>
-            <option>Other</option>
+          <label>Overall Road Condition</label>
+          <div class="cond-grid">
+            <div class="cond-btn" id="cond-Good" onclick="selectCondition('Good')">✅ Good</div>
+            <div class="cond-btn" id="cond-Fair" onclick="selectCondition('Fair')">⚠️ Fair</div>
+            <div class="cond-btn" id="cond-Poor" onclick="selectCondition('Poor')">❌ Poor</div>
+          </div>
+        </div>
+        <div class="form-field" style="margin-top:10px;">
+          <label>% Distressed Area</label>
+          <input type="number" id="attrDistress" placeholder="0–100 %" min="0" max="100" oninput="saveAttr()">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">💧</span>Drainage & Cross-Sections</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Drain Type (LHS)</label>
+            <select id="attrDrainL" onchange="saveAttr()">
+              <option>No Drain</option>
+              <option>Open Earthen</option>
+              <option>Open Masonry</option>
+              <option>RCC Drain</option>
+              <option>Covered Drain</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Drain Type (RHS)</label>
+            <select id="attrDrainR" onchange="saveAttr()">
+              <option>No Drain</option>
+              <option>Open Earthen</option>
+              <option>Open Masonry</option>
+              <option>RCC Drain</option>
+              <option>Covered Drain</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>No. of Culverts</label>
+            <input type="number" id="attrCulverts" placeholder="Count" min="0" oninput="saveAttr()">
+          </div>
+          <div class="form-field">
+            <label>No. of Bridges</label>
+            <input type="number" id="attrBridges" placeholder="Count" min="0" oninput="saveAttr()">
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Drainage Condition</label>
+          <select id="attrDrainCond" onchange="saveAttr()">
+            <option>Adequate</option>
+            <option>Partially Adequate</option>
+            <option>Inadequate</option>
+            <option>No Drainage</option>
           </select>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">📐 Structural Dimensions</div>
-        <div class="form-field">
-          <label>Carriageway Width / Surface Type</label>
-          <input type="text" id="attrCarriageway" placeholder="e.g. 3.75 m Bituminous">
+        <div class="card-h"><span class="ch-icon">🌍</span>Terrain & Soil</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Terrain Type</label>
+            <select id="attrTerrain" onchange="saveAttr()">
+              <option>Plain</option>
+              <option>Rolling</option>
+              <option>Hilly</option>
+              <option>Steep / Mountainous</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Soil Type</label>
+            <select id="attrSoil" onchange="saveAttr()">
+              <option>Alluvial</option>
+              <option>Clayey</option>
+              <option>Sandy</option>
+              <option>Black Cotton</option>
+              <option>Laterite</option>
+              <option>Rocky</option>
+              <option>Mixed</option>
+            </select>
+          </div>
         </div>
         <div class="form-field">
-          <label>Roadway Total Width (m)</label>
-          <input type="number" id="attrRoadwayWidth" placeholder="e.g. 7.5">
-        </div>
-        <div class="form-field">
-          <label>Road Length (km)</label>
-          <input type="number" id="attrRoadLength" placeholder="e.g. 4.25" step="0.01">
-        </div>
-        <div class="form-field">
-          <label>Embankment Details</label>
-          <input type="text" id="attrEmbankment" placeholder="e.g. Stable Earthen Shoulder">
+          <label>Land Use (Corridor)</label>
+          <select id="attrLandUse" onchange="saveAttr()">
+            <option>Agricultural</option>
+            <option>Forest / Plantation</option>
+            <option>Urban / Built-up</option>
+            <option>Mixed</option>
+            <option>Industrial</option>
+          </select>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">📝 Condition & Remarks</div>
-        <div class="form-field">
-          <label>Surface Condition</label>
-          <select id="attrCondition">
-            <option>Good</option>
-            <option>Fair</option>
-            <option>Poor</option>
-            <option>Very Poor</option>
-          </select>
+        <div class="card-h"><span class="ch-icon">📝</span>Project & Administrative</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Scheme / Project</label>
+            <select id="attrScheme" onchange="saveAttr()">
+              <option>PMGSY</option>
+              <option>PMGSY-II</option>
+              <option>PMGSY-III</option>
+              <option>State PWD</option>
+              <option>RIDF</option>
+              <option>Smart City</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>DPR / Agreement No.</label>
+            <input type="text" id="attrAgreement" placeholder="e.g. DPR/2024/001" oninput="saveAttr()">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Estimated Cost (₹ Lakhs)</label>
+            <input type="number" id="attrCost" placeholder="Amount" step="0.01" oninput="saveAttr()">
+          </div>
+          <div class="form-field">
+            <label>Priority Level</label>
+            <select id="attrPriority" onchange="saveAttr()">
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+          </div>
         </div>
         <div class="form-field">
-          <label>General Remarks</label>
-          <textarea id="attrRemarks" placeholder="Structural features, drainage, hazards…"></textarea>
+          <label>General Remarks / Observations</label>
+          <textarea id="attrRemarks" placeholder="Structural features, hazards, encroachments, utilities…" oninput="saveAttr()"></textarea>
         </div>
       </div>
-    </div>
 
+    </div><!-- /panel2 -->
+
+    <!-- ═══ PANEL 3: CORRECTION ═══ -->
     <div id="panel3" class="panel">
       <div class="card">
-        <div class="card-title">📶 Cell Tower / Reference Crosscheck</div>
-        <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">
-          Add known tower or reference point coordinates to crosscheck your GPS alignment. The tool will show bearing and distance from your current position in real-time.
+        <div class="card-h"><span class="ch-icon">✏️</span>Alignment Correction</div>
+        <p style="font-size:11px;color:var(--text2);margin-bottom:10px;line-height:1.5;">
+          Drag markers to correct GPS drift. Use on PC with mouse for precision. Changes save automatically to session.
         </p>
-        <div class="form-field">
-          <label>Tower / Reference Name</label>
-          <input type="text" id="towerName" placeholder="e.g. BSNL Tower Burdwan">
+        <div class="corr-toolbar">
+          <button class="btn btn-ghost btn-sm" onclick="activateCorrection()">🔄 Load Draggable Points</button>
+          <button class="btn btn-ghost btn-sm" onclick="deleteLastPoint()">🗑️ Delete Last</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearCorrMarkers()">✖ Clear Markers</button>
+          <button class="btn btn-success btn-sm" onclick="centerMap4()">🎯 Fit All</button>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div class="form-field">
-            <label>Latitude</label>
-            <input type="number" id="towerLat" placeholder="23.2352" step="0.000001">
-          </div>
-          <div class="form-field">
-            <label>Longitude</label>
-            <input type="number" id="towerLng" placeholder="87.8590" step="0.000001">
-          </div>
-        </div>
-        <div class="form-field">
-          <label>Type</label>
-          <select id="towerType">
-            <option value="cell">Cell Tower</option>
-            <option value="tower">Survey Tower</option>
-            <option value="ref">Reference Point</option>
+        <div id="corrStatus" style="font-size:11px;color:var(--cyan);margin-bottom:6px;"></div>
+      </div>
+
+      <!-- ── ADD NEW POINT ── -->
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">➕</span>Add New Point</div>
+        <p style="font-size:11px;color:var(--text2);margin-bottom:8px;line-height:1.5;">
+          <b>Step 1:</b> Select where to insert. <b>Step 2:</b> Click map → new point auto-fits into the line.
+        </p>
+        <div class="form-field" style="margin-bottom:7px;">
+          <label>Insert After Point #</label>
+          <select id="insertAfterPt" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;">
+            <option value="end">— Append at End —</option>
           </select>
         </div>
-        <button class="btn btn-primary" onclick="addTower()">+ Add Reference Point</button>
-        <button class="btn btn-ghost" style="margin-top:8px;" onclick="autoDetectTowers()">📡 Auto-detect Nearby Towers (OpenCelliD)</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">📍 Registered Reference Points</div>
-        <div class="tower-list" id="towerList">
-          <p style="color:var(--text3);font-size:12px;text-align:center;padding:16px 0;">No reference points added yet.</p>
+        <div class="form-field" style="margin-bottom:7px;">
+          <label>New Point Type</label>
+          <select id="newPtType" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;">
+            <option value="Route Point">Route Point</option>
+            <option value="Chainage">Chainage Mark</option>
+            <option value="Culvert">Culvert</option>
+            <option value="Bridge">Bridge</option>
+            <option value="Start">Survey Start</option>
+            <option value="End">Survey End</option>
+            <option value="Damaged">Road Damage</option>
+            <option value="Landmark">Landmark</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-cyan btn-sm" id="addPtModeBtn" onclick="toggleAddPointMode()" style="color:#fff;flex:1;">
+            ➕ Enable Click-to-Add
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="undoLastAdded()" style="flex:1;">↩ Undo Last</button>
+        </div>
+        <div id="addPtStatus" style="font-size:11px;color:var(--purple);display:none;margin-top:7px;padding:6px 10px;background:rgba(124,58,237,0.1);border-radius:6px;border:1px solid rgba(124,58,237,0.3);">
+          🖱️ Click-to-Add ON — tap map to place point
         </div>
       </div>
 
+      <!-- ── DELETE POINT ── -->
       <div class="card">
-        <div class="card-title">🧭 Crosscheck Analysis</div>
-        <div class="metrics-row" id="crosscheckMetrics">
-          <div class="metric-box"><span class="metric-val" id="ccBearing">—</span><span class="metric-lbl">Bearing°</span></div>
-          <div class="metric-box"><span class="metric-val" id="ccDist">—</span><span class="metric-lbl">Dist (m)</span></div>
-          <div class="metric-box"><span class="metric-val" id="ccError">—</span><span class="metric-lbl">GPS Δ (m)</span></div>
+        <div class="card-h"><span class="ch-icon">🗑️</span>Delete a Point</div>
+        <p style="font-size:11px;color:var(--text2);margin-bottom:8px;line-height:1.5;">
+          Enable delete mode → click any marker on the map → confirm to remove that point from the line.
+        </p>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-stop btn-sm" id="deleteModeBtn" onclick="toggleDeleteMode()" style="flex:1;font-size:12px;">
+            🗑️ Enable Click-to-Delete
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="deleteLastPoint()" style="flex:1;font-size:11px;">🗑️ Delete Last Point</button>
         </div>
-        <button class="btn btn-success" onclick="runCrosscheck()" style="margin-top:4px;">🔄 Run Crosscheck Now</button>
+        <div id="deleteModeStatus" style="font-size:11px;color:var(--red);display:none;margin-top:7px;padding:6px 10px;background:rgba(220,38,38,0.08);border-radius:6px;border:1px solid rgba(220,38,38,0.3);">
+          🔴 Delete mode ON — click any point marker to delete it
+        </div>
       </div>
+
+      <!-- ── FINALIZE / SAVE ── -->
+      <div class="card" style="border:2px solid var(--green);background:rgba(5,150,105,0.05);">
+        <div class="card-h"><span class="ch-icon">💾</span>Finalize &amp; Save Corrected Data</div>
+        <p style="font-size:11px;color:var(--text2);margin-bottom:10px;line-height:1.5;">
+          Once satisfied with corrections, press <b>Save Final Data</b>. This <b>locks the corrected alignment</b> — all subsequent exports (KML, CSV, Report) will use this finalized dataset.
+        </p>
+        <div id="finalSaveStatus" style="font-size:11px;margin-bottom:8px;display:none;padding:6px 10px;border-radius:6px;"></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-success" onclick="saveFinalData()" style="flex:2;">
+            💾 Save Final Data
+          </button>
+          <button class="btn btn-ghost" onclick="revertToRaw()" style="flex:1;font-size:11px;">
+            ↩ Revert to Raw
+          </button>
+        </div>
+        <div id="finalBadge" style="display:none;margin-top:8px;font-size:11px;font-weight:700;color:var(--green);text-align:center;">
+          ✅ FINALIZED — Exports will use corrected alignment
+        </div>
+      </div>
+
+      <div class="map-ctrl-bar">
+        <span style="font-size:11px;color:var(--text2);font-weight:600;">🗺️ Map:</span>
+        <select id="mapStyleSelect4" onchange="changeMapStyle4(this.value)">
+          <option value="street" selected>Street Map</option>
+          <option value="satellite">Satellite + Labels</option>
+          <option value="esri">ESRI World Street</option>
+          <option value="topo">Topo (Carto)</option>
+        </select>
+      </div>
+      <div id="map4"></div>
     </div>
 
+    <!-- ═══ PANEL 4: POINT LOG ═══ -->
     <div id="panel4" class="panel">
       <div class="card">
-        <div class="card-title">✏️ Alignment Correction</div>
-        <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">
-          বাইক চালানোর কারণে ভুল পয়েন্ট তৈরি হলে এখান থেকে drag করে ঠিক করুন।
-        </p>
-        <div class="correction-controls">
-          <button class="btn btn-ghost btn-sm" onclick="activateLineCorrection()">🔄 Load Draggable Points</button>
-          <button class="btn btn-ghost btn-sm" onclick="deleteLastPoint()">🗑️ Delete Last</button>
-          <button class="btn btn-ghost btn-sm" onclick="undoLastDrag()"> Undo</button>
+        <div class="card-h"><span class="ch-icon">📋</span>Point Log
+          <span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text3);" id="logCount">0 points</span>
         </div>
-        <div id="correctionStatus" style="font-size:12px;color:var(--accent2);margin-bottom:8px;min-height:18px;"></div>
-      </div>
-
-      <div class="card" style="padding:0;overflow:hidden;">
-        <div id="mapPanel4" style="height:40vh;"></div>
+        <div style="display:flex;gap:7px;margin-bottom:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="renderLog()">🔄 Refresh</button>
+          <button class="btn btn-ghost btn-sm" onclick="filterLog('all')" id="f-all">All</button>
+          <button class="btn btn-ghost btn-sm" onclick="filterLog('manual')" id="f-manual">Marked</button>
+          <button class="btn btn-ghost btn-sm" onclick="filterLog('route')" id="f-route">Route</button>
+        </div>
+        <div class="point-log" id="pointLog"></div>
       </div>
 
       <div class="card">
-        <div class="card-title">📋 Point Log</div>
-        <div class="point-log" id="pointLog">
-          <p style="color:var(--text3);font-size:12px;text-align:center;padding:16px;">No points recorded.</p>
-        </div>
+        <div class="card-h"><span class="ch-icon">📏</span>Chainage Segments</div>
+        <div id="segLog" style="max-height:200px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);"></div>
       </div>
     </div>
 
+    <!-- ═══ PANEL 5: EXPORT ═══ -->
     <div id="panel5" class="panel">
+
+      <!-- Drive Sync (moved from Survey) -->
+      <div class="sync-card">
+        <div class="sync-h">
+          <span class="sync-h-title">☁️ Backup &amp; Sync</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-success btn-sm" style="flex:1;" onclick="uploadBackupToDrive()">⬆️ Upload Backup</button>
+          <button class="btn btn-cyan btn-sm" style="flex:1;color:#fff;" onclick="triggerDriveFetch()">📥 Fetch / Load</button>
+        </div>
+        <input type="file" id="driveFileHook" accept=".json" onchange="executeDriveSync(event)">
+      </div>
+
       <div class="card">
-        <div class="card-title">📊 Survey Summary</div>
-        <div class="metrics-row">
-          <div class="metric-box"><span class="metric-val" id="expPts">0</span><span class="metric-lbl">Points</span></div>
-          <div class="metric-box"><span class="metric-val" id="expDist">0.00</span><span class="metric-lbl">km</span></div>
-          <div class="metric-box"><span class="metric-val" id="expPhotos">0</span><span class="metric-lbl">Photos</span></div>
+        <div class="card-h"><span class="ch-icon">📊</span>Survey Summary</div>
+        <div class="survey-summary">
+          <div class="sum-item"><div class="sum-val" id="expPts">0</div><div class="sum-lbl">Total Points</div></div>
+          <div class="sum-item"><div class="sum-val" id="expDist">0.00</div><div class="sum-lbl">km Surveyed</div></div>
+          <div class="sum-item"><div class="sum-val" id="expMarked">0</div><div class="sum-lbl">Marked Points</div></div>
+          <div class="sum-item"><div class="sum-val" id="expPhotos">0</div><div class="sum-lbl">Photos</div></div>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">⬇️ Export Data</div>
-        <button class="btn btn-success" onclick="exportKML()" style="margin-bottom:8px;">🗺️ Export KML (Google Earth)</button>
-        <div class="export-grid">
-          <button class="btn btn-primary" onclick="exportAllPointsCSV()">📍 Points CSV</button>
-          <button class="btn btn-primary" onclick="exportRoadDetailsCSV()">🗂️ Road Details CSV</button>
+        <div class="card-h"><span class="ch-icon">🗺️</span>KML Export (Google Earth)</div>
+        <p style="font-size:11px;color:var(--text2);margin-bottom:10px;line-height:1.5;">
+          <b>Best-fit centreline</b> — Douglas-Peucker simplification + Hermite curve smoothing. Red chainage marks every <b>100m</b> in <code>CH-0+000</code> format automatically included.
+        </p>
+        <div class="export-row">
+          <button class="btn btn-success" onclick="exportKML('centerline')">🛣️ Centreline KML<br><span style="font-size:10px;font-weight:400;">+ CH Marks</span></button>
+          <button class="btn btn-purple" onclick="exportKML('full')">📍 Full Survey KML<br><span style="font-size:10px;font-weight:400;">+ All Points + CH Marks</span></button>
         </div>
-        <button class="btn btn-warn" onclick="exportGeoJSON()" style="margin-top:8px;">🌍 Export GeoJSON</button>
       </div>
 
       <div class="card">
-        <div class="card-title">🔁 Session</div>
-        <button class="btn btn-ghost" onclick="clearSession()">🗑️ Clear All Data &amp; Reset Session</button>
+        <div class="card-h"><span class="ch-icon">📑</span>Data Export</div>
+        <div class="export-row">
+          <button class="btn btn-primary" onclick="exportCSV('all')">📄 All Points CSV</button>
+          <button class="btn btn-cyan" style="color:#fff;" onclick="exportCSV('marked')">📍 Marked Only CSV</button>
+        </div>
+        <button class="btn btn-warn" onclick="exportAttributeReport()" style="margin-top:8px;">📋 Road Attribute Report</button>
       </div>
+
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">🗑️</span>Session</div>
+        <button class="btn btn-stop" onclick="clearSession()">🗑️ Reset / New Survey</button>
+      </div>
+
+    </div><!-- /panel5 -->
+
+    <!-- ═══ PANEL 6: ABOUT ═══ -->
+    <div id="panel6" class="panel">
+
+      <div class="card" style="background:linear-gradient(135deg,#eaf2ff,#dbe9fd);border:1px solid rgba(29,78,216,0.25);text-align:center;">
+        <div style="font-size:34px;margin-bottom:4px;">🛣️</div>
+        <div style="font-size:15px;font-weight:800;color:var(--text);">Road Survey Pro 8.0</div>
+        <div style="font-size:11px;color:var(--text2);margin:6px 0 12px;">GPS Averaging + Curve-Aware KML + Offset Lines + Finalize</div>
+        <div style="font-size:12px;color:var(--text2);">Created By</div>
+        <div style="font-size:16px;font-weight:800;color:var(--blue2);margin:2px 0;">Parvej</div>
+        <a href="tel:+919476413802" style="display:inline-block;margin-top:4px;font-family:var(--mono);font-size:14px;font-weight:700;color:var(--blue);text-decoration:none;">📞 +91 94764 13802</a>
+        <div style="font-size:11px;color:var(--text2);margin-top:8px;line-height:1.5;">Any problem? Contact freely — call or message anytime for support, bugs or feature requests.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">🚀</span>Quick Start</div>
+        <p style="font-size:12px;color:var(--text2);line-height:1.7;">
+          1. <b>Login</b> with your username &amp; password (or tap a user tile).<br>
+          2. App opens directly on the <b>Survey</b> panel.<br>
+          3. Go to <b>Road Info</b> first and fill in the Road Name (required before tracking).<br>
+          4. Return to <b>Survey</b>, press <b>▶ AUTOMATIC</b> to start logging your route as you walk/drive.<br>
+          5. Use <b>📍 MANUAL POINT</b> any time to record a feature (culvert, bridge, damage, etc.) with GPS averaging.<br>
+          6. Press <b>⏹ STOP</b> when the survey is complete.<br>
+          7. Go to <b>Export</b> to download KML / CSV / Report, and back up your session.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">📡</span>1. Survey Panel</div>
+        <p style="font-size:12px;color:var(--text2);line-height:1.7;">
+          <b>GPS Signal Quality</b> — shows live accuracy (in metres), satellites, altitude, speed and heading. Green = good signal, yellow = fair, red = poor. Wait for green/yellow before marking points.<br><br>
+          <b>Map</b> — switch between Satellite, Street and Topo views using the dropdown. Tap <b>🎯 Center</b> to jump the map to your current location.<br><br>
+          <b>▶ AUTOMATIC</b> — starts continuous GPS tracking. The app automatically logs route points as you move and the map auto-follows your live location. Road Name must be set first (in Road Info).<br><br>
+          <b>⏹ STOP</b> — stops automatic tracking and saves the session.<br><br>
+          <b>📍 MANUAL POINT</b> — captures a single point at your current location using GPS averaging (set the number of samples below — more samples = higher accuracy but takes longer). Use this for chainage marks, structures, damage, landmarks etc.<br><br>
+          <b>Mark Point Settings</b> — choose the Point Type, add a Remark, and set Averaging Samples before tapping Manual Point.<br><br>
+          <b>Photo Capture</b> — take a GPS-stamped photo of the current location; it's saved with chainage and accuracy info.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">🗂️</span>2. Road Info Panel</div>
+        <p style="font-size:12px;color:var(--text2);line-height:1.7;">
+          Fill in the road's identity (name, code, type, from/to, district, state, block/GP), structural dimensions (widths, lanes, embankment), surface &amp; condition, drainage &amp; culverts/bridges, terrain &amp; soil, and project/admin details (scheme, agreement no., cost, priority, remarks).<br><br>
+          This information is saved automatically and appears in the final Road Attribute Report and KML description. <b>Road Name is required</b> before you can start Automatic tracking.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">✏️</span>3. Correct Panel</div>
+        <p style="font-size:12px;color:var(--text2);line-height:1.7;">
+          Use this to fix GPS drift after a survey.<br><br>
+          <b>🔄 Load Draggable Points</b> — loads every recorded point as a draggable marker on the map.<br>
+          <b>Drag</b> any marker to its correct position — changes are saved automatically and the route line updates instantly.<br>
+          <b>🗑️ Delete Last</b> — removes the most recently recorded point.<br>
+          <b>✖ Clear Markers</b> — hides the draggable markers (does not delete data).<br>
+          <b>🎯 Fit All</b> — zooms the map to fit the whole survey.<br><br>
+          You can also switch between Satellite, Street and Topo views here, same as the Survey map.<br><br>
+          <i>Tip: Correction is easiest on a PC/laptop with a mouse for precision dragging.</i>
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">📋</span>4. Log Panel</div>
+        <p style="font-size:12px;color:var(--text2);line-height:1.7;">
+          Shows every recorded point with coordinates, accuracy and type. Use <b>All / Marked / Route</b> filters to narrow the list — "Marked" shows only manually-recorded points, "Route" shows only automatic tracking points.<br><br>
+          <b>Chainage Segments</b> — lists each marked point with its chainage and distance from the previous one, useful for reviewing structure spacing along the road.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">⬇️</span>5. Export Panel</div>
+        <p style="font-size:12px;color:var(--text2);line-height:1.7;">
+          <b>☁️ Backup &amp; Sync</b> — "Upload Backup" downloads a full session JSON file (all points, photos &amp; road info) that you can save to Drive/storage; "Fetch / Load" lets you pick a previously saved JSON file to restore a session.<br><br>
+          <b>🗺️ KML Export</b> — "Centerline KML" exports just the road alignment (curve-aware, smoothed for Google Earth); "Full Survey KML" also includes all marked points with icons and details.<br><br>
+          <b>📑 Data Export</b> — download all points or only marked points as CSV, or generate a full <b>Road Attribute Report</b> (HTML) combining Road Info with the marked-points table.<br><br>
+          <b>🗑️ Reset / New Survey</b> — clears all data on this device and starts fresh. <i>This cannot be undone — export/backup first!</i>
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><span class="ch-icon">💡</span>Tips</div>
+        <p style="font-size:12px;color:var(--text2);line-height:1.7;">
+          • Keep your phone's GPS / Location set to "High Accuracy" mode.<br>
+          • Survey outdoors with a clear sky view for best accuracy.<br>
+          • Use higher averaging samples (10–20) for important fixed points like culverts and bridges.<br>
+          • Back up your session regularly using "Upload Backup" in the Export panel.<br>
+          • If the map shows blank tiles when zoomed in very far, zoom out one or two levels — satellite imagery isn't available at the deepest zoom in every area.
+        </p>
+      </div>
+
+    </div><!-- /panel6 -->
+
+  </div><!-- /panels-wrap -->
+</div><!-- /mainApp -->
+
+<!-- ADMIN MODAL -->
+<div id="adminModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>⚙️ User Management</h3>
+      <button class="modal-close" onclick="closeAdminModal()">✕</button>
     </div>
-  </div></div><div id="toast"></div>
+    <div class="modal-body" id="adminBody"></div>
+  </div>
+</div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"
+  onerror="document.body.insertAdjacentHTML('afterbegin','<div style=\'position:fixed;top:0;left:0;right:0;background:#dc2626;color:#fff;padding:10px;text-align:center;font-family:sans-serif;font-size:13px;z-index:99999;\'>⚠️ Map library failed to load — check your internet connection and reload the page.</div>')"></script>
 <script>
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+//  USER DATABASE
+// ══════════════════════════════════════════════════════
+const USERS = [
+  { id:'admin',    name:'Admin',        role:'admin',    icon:'👨‍💼', pass:'admin123' },
+  { id:'survey1',  name:'Surveyor A',   role:'surveyor', icon:'👷', pass:'survey1' },
+  { id:'survey2',  name:'Surveyor B',   role:'surveyor', icon:'👷‍♀️', pass:'survey2' },
+  { id:'viewer',   name:'Viewer',       role:'viewer',   icon:'👁️', pass:'view123' },
+  { id:'alliance', name:'Alliance',     role:'admin',    icon:'🏢', pass:'123' },
+];
+
+// ══════════════════════════════════════════════════════
 //  STATE
-// ══════════════════════════════════════════════
-let currentUser = "";
+// ══════════════════════════════════════════════════════
+let currentUser = null;
 let map1 = null, map4 = null;
 let polyline1 = null, polyline4 = null;
 let posMarker1 = null, accCircle1 = null;
-let watchId = null, wakeLock = null;
-let surveyData = [];
-let towers = [];
+let markersLayer1 = null, corrMarkersLayer = null;
+let watchId = null;
+let surveyData = [];      // all GPS points
 let pointCounter = 1;
-let photoCount = 0;
+let photoStore = [];       // {id, dataUrl, lat, lng, acc, ts}
 let totalDistance = 0;
 let correctionMarkers = [];
-let lastUndoState = null;
 let isTracking = false;
-let latestPosition = null;
+let latestPos = null;
+let selectedCondition = '';
+let logFilter = 'all';
 
-// ══════════════════════════════════════════════
+// GPS tiles
+let sat1=null, labels1=null, street1=null, topo1=null, esri1=null;
+let sat4=null, labels4=null, street4=null, topo4=null, esri4=null;
+
+// ══════════════════════════════════════════════════════
 //  LOGIN
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+function buildUserGrid() {
+  const grid = document.getElementById('userGrid');
+  grid.innerHTML = '';
+  USERS.forEach(u => {
+    const d = document.createElement('div');
+    d.className = 'user-tile';
+    d.innerHTML = `<div class="u-icon">${u.icon}</div><div class="u-name">${u.name}</div><div class="u-role">${u.role}</div>`;
+    d.onclick = () => {
+      document.getElementById('username').value = u.id;
+      document.getElementById('password').value = u.pass;
+      document.querySelectorAll('.user-tile').forEach(x=>x.classList.remove('selected'));
+      d.classList.add('selected');
+    };
+    grid.appendChild(d);
+  });
+}
+
 function processLogin() {
-  const u = document.getElementById("username").value.trim();
-  const p = document.getElementById("password").value;
-  if (u === "alliance" && p === "123") {
-    currentUser = u;
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("mainApp").style.display = "flex";
-    document.getElementById("mainApp").style.flexDirection = "column";
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value;
+  const found = USERS.find(x => x.id === u && x.pass === p);
+  if (found) {
+    currentUser = found;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'flex';
+    document.getElementById('mainApp').style.flexDirection = 'column';
+    document.getElementById('userBadge').textContent = found.icon + ' ' + found.name;
+    document.getElementById('attrSurveyor').value = found.name;
+    document.getElementById('attrDate').value = new Date().toISOString().slice(0,10);
     initMaps();
     startPassiveGPS();
+    restoreAttr();
+    if (restoreSession()) { plotDataOnMap(); updateMetrics(); }
+    // Restore finalized data if previously saved
+    try {
+      const fd = localStorage.getItem('rsp7_final');
+      if (fd) {
+        const parsed = JSON.parse(fd);
+        finalData = parsed.finalData || null;
+        if (finalData) {
+          document.getElementById('finalBadge').style.display = 'block';
+          const st = document.getElementById('finalSaveStatus');
+          st.style.display = 'block';
+          st.style.background = 'rgba(5,150,105,0.1)';
+          st.style.border = '1px solid var(--green)';
+          st.style.color = 'var(--green)';
+          st.textContent = `✅ ${finalData.length} pts finalized on ${new Date(parsed.ts||0).toLocaleString('en-IN')}`;
+        }
+      }
+    } catch(e){}
+    switchPanel(1);
   } else {
-    document.getElementById("loginError").style.display = "block";
+    document.getElementById('loginError').style.display = 'block';
   }
 }
 
-// ══════════════════════════════════════════════
-//  PANEL SWITCHING
-// ══════════════════════════════════════════════
-function switchPanel(n) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('panel' + n).classList.add('active');
-  document.querySelectorAll('.nav-tab')[n-1].classList.add('active');
-  if (n === 1 && map1) setTimeout(() => map1.invalidateSize(), 150);
-  if (n === 4 && map4) setTimeout(() => { map4.invalidateSize(); if (polyline4) { const b = polyline4.getBounds(); if(b.isValid()) map4.fitBounds(b); } }, 150);
-  if (n === 5) refreshExportPanel();
+// ══════════════════════════════════════════════════════
+//  ADMIN MODAL
+// ══════════════════════════════════════════════════════
+function openAdminModal() {
+  const body = document.getElementById('adminBody');
+  body.innerHTML = '<div style="margin-bottom:12px;font-size:11px;color:var(--text2);">Manage users (edit USERS array in code to add/remove)</div>';
+  USERS.forEach(u => {
+    const d = document.createElement('div');
+    d.className = 'user-row';
+    d.innerHTML = `<span class="ur-icon">${u.icon}</span>
+      <div class="ur-info">
+        <div class="ur-name">${u.name} <span class="role-tag role-${u.role}">${u.role}</span></div>
+        <div class="ur-pass">ID: ${u.id} | Pass: ${u.pass}</div>
+      </div>`;
+    body.appendChild(d);
+  });
+  document.getElementById('adminModal').classList.add('open');
 }
+function closeAdminModal() { document.getElementById('adminModal').classList.remove('open'); }
 
-// ══════════════════════════════════════════════
-//  MAP INIT
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+//  MAPS INIT
+// ══════════════════════════════════════════════════════
 function initMaps() {
-  map1 = L.map('mapPanel1', { zoomControl: true }).setView([23.235, 87.859], 15);
-  addTileLayer(map1);
-  polyline1 = L.polyline([], { color: '#3b82f6', weight: 5, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }).addTo(map1);
+  if (typeof L === 'undefined') {
+    toast('⚠️ Map library not loaded — check internet connection and reload');
+    setStatus('error', '⚠️ Map library (Leaflet) failed to load. Reload the page with an active internet connection.');
+    return;
+  }
+  // Map tiles - maxZoom:22 allows zooming to z22; maxNativeZoom:19 tells Leaflet
+  // to upscale/stretch z19 tiles beyond z19 instead of going blank.
+  // Esri Imagery native tiles exist up to z19; CartoDB up to z20.
+  sat1     = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:22, maxNativeZoom:19, attribution:'© Esri', tileSize:256, zoomOffset:0});
+  labels1  = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {maxZoom:22, maxNativeZoom:20, attribution:'© CartoDB'});
+  street1  = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:22, maxNativeZoom:20, attribution:'© CartoDB © OSM'});
+  esri1    = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom:22, maxNativeZoom:19, attribution:'© Esri'});
+  topo1    = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:22, maxNativeZoom:20, attribution:'© CartoDB'});
 
-  posMarker1 = L.circleMarker([23.235, 87.859], {
-    radius: 8, fillColor: "#3b82f6", color: "#fff", weight: 2.5, fillOpacity: 1
-  }).addTo(map1);
+  // Same for Correction map
+  sat4     = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:22, maxNativeZoom:19, attribution:'© Esri', tileSize:256, zoomOffset:0});
+  labels4  = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {maxZoom:22, maxNativeZoom:20, attribution:'© CartoDB'});
+  street4  = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:22, maxNativeZoom:20, attribution:'© CartoDB © OSM'});
+  esri4    = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom:22, maxNativeZoom:19, attribution:'© Esri'});
+  topo4    = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:22, maxNativeZoom:20, attribution:'© CartoDB'});
 
-  accCircle1 = L.circle([23.235, 87.859], {
-    radius: 0, color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.1, weight: 1
-  }).addTo(map1);
+  map1 = L.map('map1', {zoomControl:true, maxZoom:22}).setView([22.5, 88.3], 15);
+  street1.addTo(map1);
+  polyline1 = L.polyline([], {color:'#3b82f6', weight:5, opacity:0.9}).addTo(map1);
+  markersLayer1 = L.layerGroup().addTo(map1);
+  posMarker1 = L.circleMarker([22.5,88.3], {radius:9, fillColor:'#3b82f6', color:'#fff', weight:2, fillOpacity:1}).addTo(map1);
+  accCircle1 = L.circle([22.5,88.3], {radius:0, color:'#3b82f6', fillColor:'#3b82f6', fillOpacity:0.07, weight:1}).addTo(map1);
 
-  map4 = L.map('mapPanel4', { zoomControl: false }).setView([23.235, 87.859], 15);
-  addTileLayer(map4);
-  polyline4 = L.polyline([], { color: '#3b82f6', weight: 5, opacity: 0.9 }).addTo(map4);
+  map4 = L.map('map4', {zoomControl:true, maxZoom:22}).setView([22.5, 88.3], 15);
+  street4.addTo(map4);
+  polyline4 = L.polyline([], {color:'#3b82f6', weight:5}).addTo(map4);
+  corrMarkersLayer = L.layerGroup().addTo(map4);
 }
 
-function addTileLayer(mapInst) {
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    maxZoom: 20, attribution: '© Esri'
-  }).addTo(mapInst);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png', {
-    maxZoom: 20, opacity: 0.85
-  }).addTo(mapInst);
-}
-
-// ══════════════════════════════════════════════
-//  PASSIVE GPS (header badge updates)
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+//  GPS — PASSIVE (always on for position display)
+// ══════════════════════════════════════════════════════
 function startPassiveGPS() {
   navigator.geolocation.watchPosition(pos => {
-    latestPosition = pos;
-    const acc = pos.coords.accuracy;
-    const dot = document.getElementById('gpsDot');
-    const txt = document.getElementById('gpsAccText');
-    txt.textContent = acc < 1000 ? acc.toFixed(0) + 'm' : '—';
-    dot.className = 'gps-dot ' + (acc <= 8 ? 'good' : acc <= 20 ? 'ok' : 'bad');
-    updateSignalBars(acc);
-    posMarker1.setLatLng([pos.coords.latitude, pos.coords.longitude]);
-    accCircle1.setLatLng([pos.coords.latitude, pos.coords.longitude]).setRadius(acc);
-  }, () => {}, { enableHighAccuracy: true, maximumAge: 2000 });
+    latestPos = pos;
+    updateGPSUI(pos);
+    if (!isTracking) {
+      posMarker1.setLatLng([pos.coords.latitude, pos.coords.longitude]);
+      accCircle1.setLatLng([pos.coords.latitude, pos.coords.longitude]).setRadius(pos.coords.accuracy);
+    }
+  }, err => setGPSError(err), {enableHighAccuracy:true, timeout:10000, maximumAge:0});
 }
 
-function updateSignalBars(acc) {
-  const bars = document.querySelectorAll('.signal-bar');
-  let lit = acc <= 5 ? 5 : acc <= 10 ? 4 : acc <= 20 ? 3 : acc <= 50 ? 2 : 1;
-  bars.forEach((b, i) => b.classList.toggle('lit', i < lit));
+function updateGPSUI(pos) {
+  const acc = pos.coords.accuracy;
+  const dot = document.getElementById('gpsDot');
+  const pill = document.getElementById('gpsAccText');
+  const ring = document.getElementById('accRingFill');
+  const ringAcc = document.getElementById('ringAcc');
+  const accClass = document.getElementById('accClass');
+  const metAcc = document.getElementById('metAcc');
+
+  pill.textContent = acc.toFixed(1)+'m';
+  ringAcc.textContent = acc.toFixed(0);
+  metAcc.textContent = acc.toFixed(1);
+
+  // Ring fill: 100% = acc≤3m, 0% = acc≥50m
+  const pct = Math.max(0, Math.min(100, (1 - (acc - 3) / 47) * 100));
+  const circ = 213.6;
+  ring.setAttribute('stroke-dashoffset', circ - (circ * pct / 100));
+
+  if (acc <= 5) {
+    dot.className = 'gps-dot good';
+    ring.setAttribute('stroke', '#10b981');
+    accClass.textContent = '✅ Excellent (<5m)'; accClass.style.color='var(--green)';
+  } else if (acc <= 10) {
+    dot.className = 'gps-dot good';
+    ring.setAttribute('stroke', '#10b981');
+    accClass.textContent = '🟢 Good (<10m)'; accClass.style.color='var(--green)';
+  } else if (acc <= 20) {
+    dot.className = 'gps-dot ok';
+    ring.setAttribute('stroke', '#f59e0b');
+    accClass.textContent = '🟡 Fair (<20m)'; accClass.style.color='var(--yellow)';
+  } else {
+    dot.className = 'gps-dot bad';
+    ring.setAttribute('stroke', '#ef4444');
+    accClass.textContent = '🔴 Poor (>20m)'; accClass.style.color='var(--red)';
+  }
+
+  if (pos.coords.altitude != null) document.getElementById('altVal').textContent = pos.coords.altitude.toFixed(1)+'m';
+  if (pos.coords.speed != null) document.getElementById('speedVal').textContent = (pos.coords.speed * 3.6).toFixed(1)+' km/h';
+  else document.getElementById('speedVal').textContent = '—';
+  if (pos.coords.heading != null) {
+    const h = pos.coords.heading.toFixed(0);
+    document.getElementById('headingVal').textContent = h+'°';
+  }
+  document.getElementById('markBtn').disabled = false;
 }
 
-// ══════════════════════════════════════════════
-//  GPS TRACKING ENGINE
-// ══════════════════════════════════════════════
-async function startTracking() {
-  const roadName = document.getElementById("attrRoadName").value.trim();
-  if (!roadName) { toast("⚠ Set a Road Name in 'Road Info' tab first"); switchPanel(2); return; }
+function setGPSError(err) {
+  document.getElementById('gpsDot').className = 'gps-dot bad';
+  document.getElementById('gpsAccText').textContent = 'Error';
+  setStatus('error', '⚠️ GPS Error: ' + err.message);
+}
 
+// ══════════════════════════════════════════════════════
+//  TRACKING
+// ══════════════════════════════════════════════════════
+function startTracking() {
+  const rn = document.getElementById('attrRoadName').value.trim();
+  if (!rn) { toast('⚠ Set Road Name in Road Info first'); switchPanel(2); return; }
   document.getElementById('startBtn').disabled = true;
   document.getElementById('stopBtn').disabled = false;
   isTracking = true;
-  setStatus('warn', '🔒', 'Locking GPS satellites…');
-  document.getElementById('trackingDot').style.animationDuration = '0.6s';
-
-  try {
-    if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
-  } catch(e) {}
-
-  watchId = navigator.geolocation.watchPosition(
-    handleGPSUpdate,
-    err => { setStatus('error', '❌', 'GPS Error — Enable device location'); },
-    { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
-  );
+  setStatus('tracking', '🟢 Tracking active — walk along centerline');
+  watchId = navigator.geolocation.watchPosition(handleAutoPoint, setGPSError,
+    {enableHighAccuracy:true, timeout:8000, maximumAge:0});
+  toast('▶ GPS Tracking Started');
 }
 
 function stopTracking() {
-  if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
-  if (wakeLock) { wakeLock.release(); wakeLock = null; }
+  navigator.geolocation.clearWatch(watchId);
   document.getElementById('startBtn').disabled = false;
   document.getElementById('stopBtn').disabled = true;
   isTracking = false;
-  setStatus('error', '⏹', `Tracking stopped — ${surveyData.length} points, ${totalDistance.toFixed(2)} km`);
-  document.getElementById('trackingDot').style.animationDuration = '2s';
-  toast('Tracking stopped. ' + surveyData.length + ' points saved.');
+  setStatus('standby', '⏹ Tracking stopped');
+  saveSession();
+  toast('⏹ Tracking Stopped — ' + surveyData.length + ' points captured');
 }
 
-function handleGPSUpdate(position) {
-  const lat = position.coords.latitude;
-  const lng = position.coords.longitude;
-  const acc = position.coords.accuracy;
-  const alt = position.coords.altitude;
-  latestPosition = position;
+function handleAutoPoint(pos) {
+  const lat = pos.coords.latitude, lng = pos.coords.longitude;
+  const acc = pos.coords.accuracy;
 
-  document.getElementById('gpsAccText').textContent = acc.toFixed(0) + 'm';
-  const dot = document.getElementById('gpsDot');
-  dot.className = 'gps-dot ' + (acc <= 8 ? 'good' : acc <= 20 ? 'ok' : 'bad');
-  updateSignalBars(acc);
-
-  document.getElementById('metAcc').textContent = acc.toFixed(0);
-  document.getElementById('accLabel').textContent = acc <= 5 ? 'Excellent' : acc <= 10 ? 'Good' : acc <= 20 ? 'Fair' : 'Poor';
-  const barPct = Math.max(0, Math.min(100, (1 - (acc / 60)) * 100));
-  const barEl = document.getElementById('accBar');
-  barEl.style.width = barPct + '%';
-  barEl.style.background = acc <= 8 ? '#10b981' : acc <= 20 ? '#f59e0b' : '#ef4444';
-
-  posMarker1.setLatLng([lat, lng]);
-  accCircle1.setLatLng([lat, lng]).setRadius(acc);
-  map1.panTo([lat, lng]);
-
-  if (acc > 30) {
-    setStatus('warn', '⚠️', `Weak GPS (${acc.toFixed(0)} m) — waiting for better signal`);
-    return;
-  }
-
-  setStatus('tracking', '📍', `Tracking — Acc: ${acc.toFixed(0)} m · Pts: ${surveyData.length}`);
+  // Skip poor accuracy
+  if (acc > 50) return;
 
   if (surveyData.length > 0) {
     const last = surveyData[surveyData.length - 1];
-    if (last.type === "Route Point") {
-      const d = haversine(parseFloat(last.lat), parseFloat(last.lng), lat, lng);
-      if (d < 3) return; 
-      totalDistance += d / 1000;
+    const d = haversine(+last.lat, +last.lng, lat, lng);
+
+    // Heading change detection — more points on curves
+    const minDist = (last.type === 'Route Point') ? 3 : 3;
+    const heading = pos.coords.heading;
+    const lastHeading = last.heading || null;
+    let headingChange = 0;
+    if (heading != null && lastHeading != null) {
+      headingChange = Math.abs(heading - lastHeading);
+      if (headingChange > 180) headingChange = 360 - headingChange;
     }
+    const curveThreshold = headingChange > 15 ? 2 : minDist; // tighter on curves
+    if (d < curveThreshold) return;
+
+    totalDistance += d / 1000;
+    updateChainage();
   }
 
-  const latLng = [lat, lng];
-  polyline1.addLatLng(latLng);
-  polyline4.addLatLng(latLng);
+  const llArr = [lat, lng];
+  polyline1.addLatLng(llArr);
+  polyline4.addLatLng(llArr);
+  posMarker1.setLatLng(llArr);
+  accCircle1.setLatLng(llArr).setRadius(acc);
+  map1.panTo(llArr, {animate:true});
 
-  L.circleMarker(latLng, { radius: 2.5, fillColor: '#3b82f6', color: '#000', weight: 0.5, fillOpacity: 0.7, interactive: false }).addTo(map1);
-
+  const ch = formatChainage(totalDistance);
   surveyData.push({
-    point: pointCounter++,
-    lat: lat.toFixed(7), lng: lng.toFixed(7),
-    alt: alt ? alt.toFixed(1) : 'N/A',
-    accuracy: acc.toFixed(1),
-    time: new Date().toLocaleTimeString('en-GB'),
-    type: "Route Point",
-    remarks: "Auto Path"
+    point: pointCounter++, lat: lat.toFixed(7), lng: lng.toFixed(7),
+    accuracy: acc.toFixed(1), type: 'Route Point', remarks: 'Auto Path',
+    chainage: ch, heading: pos.coords.heading, alt: pos.coords.altitude, ts: Date.now()
   });
 
-  document.getElementById('metPts').textContent = surveyData.length;
+  updateMetrics();
+  saveSession();
+}
+
+// ══════════════════════════════════════════════════════
+//  MARK POINT WITH GPS AVERAGING
+// ══════════════════════════════════════════════════════
+let isAveraging = false;
+let avgSamplesCollected = [];
+let avgTarget = 3;
+let avgWatchId = null;
+
+function startMarkPoint() {
+  if (!latestPos) { toast('⚠ No GPS signal yet'); return; }
+  if (isAveraging) return;
+
+  avgTarget = parseInt(document.getElementById('avgSamples').value);
+  if (avgTarget === 1) {
+    // instant mark
+    commitMarkPoint(latestPos.coords.latitude, latestPos.coords.longitude, latestPos.coords.accuracy);
+    return;
+  }
+
+  isAveraging = true;
+  avgSamplesCollected = [];
+  document.getElementById('markBtn').disabled = true;
+  document.getElementById('markAvgWrap').style.display = 'block';
+  setStatus('averaging', '📡 Averaging GPS — hold still…');
+
+  avgWatchId = navigator.geolocation.watchPosition(pos => {
+    if (!isAveraging) return;
+    avgSamplesCollected.push({ lat: pos.coords.latitude, lng: pos.coords.longitude, acc: pos.coords.accuracy });
+    const n = avgSamplesCollected.length;
+    document.getElementById('avgBarFill').style.width = (n / avgTarget * 100) + '%';
+    document.getElementById('avgCountText').textContent = n + ' / ' + avgTarget + ' samples';
+
+    if (n >= avgTarget) {
+      navigator.geolocation.clearWatch(avgWatchId);
+      isAveraging = false;
+      const avgLat = avgSamplesCollected.reduce((s,x)=>s+x.lat,0)/n;
+      const avgLng = avgSamplesCollected.reduce((s,x)=>s+x.lng,0)/n;
+      const avgAcc = avgSamplesCollected.reduce((s,x)=>s+x.acc,0)/n;
+      document.getElementById('markAvgWrap').style.display = 'none';
+      document.getElementById('markBtn').disabled = false;
+      setStatus('tracking', isTracking ? '🟢 Tracking active' : '⏹ Tracking stopped');
+      commitMarkPoint(avgLat, avgLng, avgAcc);
+    }
+  }, err => {
+    navigator.geolocation.clearWatch(avgWatchId);
+    isAveraging = false;
+    document.getElementById('markAvgWrap').style.display = 'none';
+    document.getElementById('markBtn').disabled = false;
+    toast('⚠ GPS error during averaging');
+  }, {enableHighAccuracy:true, timeout:15000, maximumAge:0});
+}
+
+function commitMarkPoint(lat, lng, acc) {
+  const ptype = document.getElementById('pointType').value;
+  const remark = document.getElementById('pointRemarks').value.trim() || ptype;
+
+  if (surveyData.length > 0) {
+    const last = surveyData[surveyData.length - 1];
+    totalDistance += haversine(+last.lat, +last.lng, lat, lng) / 1000;
+    updateChainage();
+  }
+
+  const ch = formatChainage(totalDistance);
+  const pt = {
+    point: pointCounter++, lat: lat.toFixed(7), lng: lng.toFixed(7),
+    accuracy: acc.toFixed(1), type: ptype, remarks: remark,
+    chainage: ch, averaged: avgTarget, ts: Date.now()
+  };
+  surveyData.push(pt);
+
+  // Add to polylines
+  const ll = [lat, lng];
+  polyline1.addLatLng(ll);
+  polyline4.addLatLng(ll);
+
+  // Add marker
+  const colors = {Start:'#10b981', End:'#f59e0b', Chainage:'#8b5cf6', Culvert:'#06b6d4', Bridge:'#6366f1',
+    Intersection:'#f97316', Damaged:'#ef4444', Pothole:'#ef4444', Landmark:'#10b981',
+    Drain:'#3b82f6', Other:'#94a3b8'};
+  const col = colors[ptype] || '#ef4444';
+  const icons = {Start:'🟢', End:'🔴', Chainage:'🔷', Culvert:'🔵', Bridge:'🟣',
+    Intersection:'🟠', Damaged:'❌', Pothole:'⚠️', Landmark:'⭐', Other:'📍'};
+
+  L.circleMarker(ll, {radius:10, fillColor:col, color:'#fff', weight:2.5, fillOpacity:1})
+    .addTo(markersLayer1)
+    .bindPopup(`<b>${(icons[ptype]||'📍')} ${ptype} #${pt.point}</b><br>Ch: ${ch}<br>Acc: ${acc.toFixed(1)}m<br>${remark}`);
+
+  document.getElementById('pointRemarks').value = '';
+  updateMetrics();
+  saveSession();
+  renderLog();
+  toast(`✅ ${ptype} marked at Ch ${ch} (Acc: ${acc.toFixed(1)}m, ${avgTarget} avg)`);
+}
+
+// ══════════════════════════════════════════════════════
+//  CHAINAGE
+// ══════════════════════════════════════════════════════
+function formatChainage(km) {
+  const m = Math.round(km * 1000);
+  return Math.floor(m / 1000) + '+' + String(m % 1000).padStart(3,'0');
+}
+
+function updateChainage() {
+  const ch = formatChainage(totalDistance);
+  document.getElementById('metCh').textContent = ch;
+  document.getElementById('chainageBadge').textContent = 'Ch: ' + ch;
+}
+
+// ══════════════════════════════════════════════════════
+//  PHOTO CAPTURE
+// ══════════════════════════════════════════════════════
+let photoCount = 0;
+function capturePhoto() {
+  const input = document.getElementById('cameraInput');
+  const file = input.files[0];
+  if (!file || !latestPos) { toast('⚠ No GPS or no file'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const ph = {
+      id: ++photoCount,
+      dataUrl: e.target.result,
+      lat: latestPos.coords.latitude.toFixed(7),
+      lng: latestPos.coords.longitude.toFixed(7),
+      acc: latestPos.coords.accuracy.toFixed(1),
+      chainage: formatChainage(totalDistance),
+      ts: Date.now()
+    };
+    photoStore.push(ph);
+    renderPhotoGrid();
+    saveSession();
+    toast(`📷 Photo #${ph.id} saved at Ch ${ph.chainage}`);
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function renderPhotoGrid() {
+  const grid = document.getElementById('photoGrid');
+  grid.innerHTML = '';
+  photoStore.slice(-9).forEach(ph => {
+    const d = document.createElement('div');
+    d.className = 'photo-thumb';
+    d.innerHTML = `<img src="${ph.dataUrl}"><div class="ph-label">Ch:${ph.chainage} ±${ph.acc}m</div>`;
+    grid.appendChild(d);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  METRICS & STATUS
+// ══════════════════════════════════════════════════════
+function updateMetrics() {
+  const n = surveyData.length;
+  const marked = surveyData.filter(r => r.type !== 'Route Point').length;
+  document.getElementById('metPts').textContent = n;
   document.getElementById('metDist').textContent = totalDistance.toFixed(2);
-  refreshPointLog();
+  document.getElementById('expPts').textContent = n;
+  document.getElementById('expDist').textContent = totalDistance.toFixed(2);
+  document.getElementById('expMarked').textContent = marked;
+  document.getElementById('expPhotos').textContent = photoStore.length;
+}
+
+function setStatus(type, msg) {
+  const sb = document.getElementById('statusBar');
+  const icons = {standby:'🔵', tracking:'🟢', error:'🔴', warn:'🟡', averaging:'🔵'};
+  sb.className = 'status-bar ' + type;
+  sb.innerHTML = `<span class="status-icon">${icons[type]||'🔵'}</span><span>${msg}</span>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  MAP CONTROLS
+// ══════════════════════════════════════════════════════
+function changeMapStyle(v) {
+  [sat1, labels1, street1, topo1, esri1].forEach(l => { if(l && map1.hasLayer(l)) map1.removeLayer(l); });
+  if (v === 'satellite') { sat1.addTo(map1); labels1.addTo(map1); }
+  else if (v === 'esri') { esri1.addTo(map1); }
+  else if (v === 'topo') { topo1.addTo(map1); }
+  else { street1.addTo(map1); }
+}
+
+function changeMapStyle4(v) {
+  [sat4, labels4, street4, topo4, esri4].forEach(l => { if(l && map4.hasLayer(l)) map4.removeLayer(l); });
+  if (v === 'satellite') { sat4.addTo(map4); labels4.addTo(map4); }
+  else if (v === 'esri') { esri4.addTo(map4); }
+  else if (v === 'topo') { topo4.addTo(map4); }
+  else { street4.addTo(map4); }
 }
 
 function centerMap() {
-  if (latestPosition) {
-    map1.setView([latestPosition.coords.latitude, latestPosition.coords.longitude], 18);
-  } else {
-    navigator.geolocation.getCurrentPosition(p => map1.setView([p.coords.latitude, p.coords.longitude], 18));
-  }
+  if (!latestPos) return;
+  map1.setView([latestPos.coords.latitude, latestPos.coords.longitude], 17);
 }
 
-// ══════════════════════════════════════════════
-//  MANUAL POINT
-// ══════════════════════════════════════════════
-function addManualPoint() {
-  const remark = document.getElementById("pointRemarks").value.trim() || "Marked Point";
-  const ptype = document.getElementById("pointType").value;
-
-  const getSrc = latestPosition
-    ? Promise.resolve(latestPosition)
-    : new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true }));
-
-  setStatus('warn', '⌛', 'Fetching precise location…');
-
-  getSrc.then(pos => {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    const acc = pos.coords.accuracy;
-    const latLng = [lat, lng];
-
-    const colors = { Landmark:'#10b981', Culvert:'#06b6d4', Bridge:'#6366f1', Intersection:'#f59e0b', Damage:'#ef4444', Tower:'#f472b6', Other:'#94a3b8' };
-    const col = colors[ptype] || '#ef4444';
-
-    L.circleMarker(latLng, { radius: 8, fillColor: col, color: '#fff', weight: 2, fillOpacity: 1 })
-      .addTo(map1)
-      .bindPopup(`<b>${ptype} #${pointCounter}</b><br>${remark}<br><small>±${acc.toFixed(0)} m</small>`)
-      .openPopup();
-
-    polyline1.addLatLng(latLng);
-    polyline4.addLatLng(latLng);
-
-    surveyData.push({
-      point: pointCounter++, lat: lat.toFixed(7), lng: lng.toFixed(7),
-      alt: pos.coords.altitude ? pos.coords.altitude.toFixed(1) : 'N/A',
-      accuracy: acc.toFixed(1), time: new Date().toLocaleTimeString('en-GB'),
-      type: ptype + " (Manual)", remarks: remark
-    });
-
-    document.getElementById('pointRemarks').value = "";
-    document.getElementById('metPts').textContent = surveyData.length;
-    setStatus('tracking', '✅', `Point added: ${ptype} — "${remark}"`);
-    toast('📍 Point added: ' + remark);
-    refreshPointLog();
-  }).catch(() => setStatus('error', '❌', 'GPS error during manual point add'));
+function centerMap4() {
+  const lls = surveyData.map(r => [+r.lat, +r.lng]);
+  if (lls.length) map4.fitBounds(L.latLngBounds(lls), {padding:[30,30]});
 }
 
-// ══════════════════════════════════════════════
-//  TOWER CROSSCHECK
-// ══════════════════════════════════════════════
-function addTower() {
-  const name = document.getElementById("towerName").value.trim();
-  const lat = parseFloat(document.getElementById("towerLat").value);
-  const lng = parseFloat(document.getElementById("towerLng").value);
-  const type = document.getElementById("towerType").value;
-
-  if (!name || isNaN(lat) || isNaN(lng)) { toast("⚠ Enter name and valid coordinates"); return; }
-
-  towers.push({ name, lat, lng, type });
-  document.getElementById("towerName").value = "";
-  document.getElementById("towerLat").value = "";
-  document.getElementById("towerLng").value = "";
-
-  const icon = L.divIcon({
-    className: '',
-    html: `<div style="background:${type==='cell'?'#3b82f6':type==='tower'?'#f59e0b':'#10b981'};color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap;border:1px solid rgba(255,255,255,0.3);">${type==='cell'?'📶':'📡'} ${name}</div>`,
-    iconAnchor: [0, 0]
-  });
-  L.marker([lat, lng], { icon }).addTo(map1);
-  L.marker([lat, lng], { icon }).addTo(map4);
-
-  renderTowerList();
-  toast('Reference point added: ' + name);
+function switchPanel(n) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel' + n).classList.add('active');
+  const sel = document.getElementById('panelSelect');
+  if (sel) sel.value = n;
+  if (n===1 && map1) setTimeout(()=>map1 && map1.invalidateSize(),150);
+  if (n===3 && map4) setTimeout(()=>{ if(map4){map4.invalidateSize(); centerMap4();} },200);
+  if (n===4) renderLog();
+  if (n===7) renderProfile();
 }
 
-function renderTowerList() {
-  const list = document.getElementById("towerList");
-  if (towers.length === 0) { list.innerHTML = '<p style="color:var(--text3);font-size:12px;text-align:center;padding:16px;">No reference points added.</p>'; return; }
-
-  list.innerHTML = towers.map((t, i) => {
-    let distStr = '—', bearStr = '—';
-    if (latestPosition) {
-      const d = haversine(latestPosition.coords.latitude, latestPosition.coords.longitude, t.lat, t.lng);
-      const b = bearing(latestPosition.coords.latitude, latestPosition.coords.longitude, t.lat, t.lng);
-      distStr = d < 1000 ? d.toFixed(0) + ' m' : (d/1000).toFixed(2) + ' km';
-      bearStr = b.toFixed(0) + '°';
-    }
-    return `<div class="tower-item">
-      <div>
-        <div class="t-name">${t.name}</div>
-        <div class="t-bearing">Bearing: ${bearStr} · ${distStr}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;">
-        <span class="t-type ${t.type}">${t.type}</span>
-        <span onclick="removeTower(${i})" style="cursor:pointer;color:var(--danger);font-size:14px;">✕</span>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function removeTower(i) { towers.splice(i, 1); renderTowerList(); }
-
-function runCrosscheck() {
-  if (!latestPosition) { toast("⚠ GPS not available"); return; }
-  if (towers.length === 0) { toast("⚠ No reference points added"); return; }
-
-  const myLat = latestPosition.coords.latitude;
-  const myLng = latestPosition.coords.longitude;
-  const myAcc = latestPosition.coords.accuracy;
-
-  let nearest = null, nearestDist = Infinity;
-  towers.forEach(t => {
-    const d = haversine(myLat, myLng, t.lat, t.lng);
-    if (d < nearestDist) { nearestDist = d; nearest = t; }
-  });
-
-  const b = bearing(myLat, myLng, nearest.lat, nearest.lng);
-  document.getElementById('ccBearing').textContent = b.toFixed(0) + '°';
-  document.getElementById('ccDist').textContent = nearestDist < 1000 ? nearestDist.toFixed(0) : (nearestDist/1000).toFixed(2)+'k';
-  document.getElementById('ccError').textContent = myAcc.toFixed(0);
-
-  renderTowerList();
-  toast(`Crosscheck: Nearest — ${nearest.name} at ${nearestDist.toFixed(0)} m, bearing ${b.toFixed(0)}°`);
-}
-
-function autoDetectTowers() {
-  if (!latestPosition) { navigator.geolocation.getCurrentPosition(p => { latestPosition = p; autoDetectTowers(); }, () => toast("⚠ GPS not available"), {enableHighAccuracy:true}); return; }
-  toast("📡 Auto-detection uses OpenCelliD API key — add known towers manually for offline use.");
-}
-
-// ══════════════════════════════════════════════
-//  LINE CORRECTION (PANEL 4)
-// ══════════════════════════════════════════════
-function activateLineCorrection() {
-  if (surveyData.length === 0) { toast("⚠ No survey points to load"); return; }
-  correctionMarkers.forEach(m => map4.removeLayer(m));
+// ══════════════════════════════════════════════════════
+//  CORRECTION PANEL
+// ══════════════════════════════════════════════════════
+function activateCorrection() {
+  correctionMarkers.forEach(m => corrMarkersLayer.removeLayer(m));
   correctionMarkers = [];
-  lastUndoState = JSON.parse(JSON.stringify(surveyData));
-
+  let n = 0;
   surveyData.forEach((node, idx) => {
-    const m = L.marker([parseFloat(node.lat), parseFloat(node.lng)], {
-      draggable: true,
-      icon: L.divIcon({
-        className: '',
-        html: `<div style="background:#f97316;width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.5)"></div>`,
-        iconSize: [12, 12], iconAnchor: [6, 6]
-      }),
-      title: `Pt ${node.point}`
-    }).addTo(map4);
-
+    const m = L.marker([+node.lat, +node.lng], {draggable:true,
+      icon: L.divIcon({html:`<div style="background:${node.type==='Route Point'?'#3b82f6':'#ef4444'};width:10px;height:10px;border-radius:50%;border:2px solid #fff;"></div>`, iconSize:[10,10], iconAnchor:[5,5]})
+    }).addTo(corrMarkersLayer);
     m.on('dragend', () => {
       const ll = m.getLatLng();
       surveyData[idx].lat = ll.lat.toFixed(7);
       surveyData[idx].lng = ll.lng.toFixed(7);
-      surveyData[idx].remarks += ' [Corrected]';
       refreshPolylines();
-      document.getElementById('correctionStatus').textContent = `✔ Point ${node.point} updated`;
-      refreshPointLog();
+      saveSession();
     });
     correctionMarkers.push(m);
+    n++;
   });
+  document.getElementById('corrStatus').textContent = `${n} draggable points loaded. Drag to correct alignment.`;
+  centerMap4();
+}
 
-  const b = polyline4.getBounds();
-  if (b.isValid()) map4.fitBounds(b, { padding: [20, 20] });
-  document.getElementById('correctionStatus').textContent = `${surveyData.length} draggable points loaded. Drag to correct.`;
+function clearCorrMarkers() {
+  correctionMarkers.forEach(m => corrMarkersLayer.removeLayer(m));
+  correctionMarkers = [];
+  document.getElementById('corrStatus').textContent = '';
 }
 
 function deleteLastPoint() {
-  if (surveyData.length === 0) { toast("⚠ No points to delete"); return; }
-  lastUndoState = JSON.parse(JSON.stringify(surveyData));
+  if (!surveyData.length) return;
   surveyData.pop();
+  pointCounter = Math.max(1, pointCounter - 1);
   refreshPolylines();
-  refreshPointLog();
-  document.getElementById('metPts').textContent = surveyData.length;
-  toast('Last point deleted');
-}
-
-function undoLastDrag() {
-  if (!lastUndoState) { toast("Nothing to undo"); return; }
-  surveyData = lastUndoState;
-  lastUndoState = null;
-  refreshPolylines();
-  refreshPointLog();
-  toast('↩ Undone');
+  saveSession();
+  plotDataOnMap();
+  renderLog();
+  toast('🗑 Last point deleted');
 }
 
 function refreshPolylines() {
-  const lls = surveyData.map(n => [parseFloat(n.lat), parseFloat(n.lng)]);
+  const lls = surveyData.map(n => [+n.lat, +n.lng]);
   polyline1.setLatLngs(lls);
   polyline4.setLatLngs(lls);
 }
 
-function refreshPointLog() {
+// ══════════════════════════════════════════════════════
+//  POINT LOG
+// ══════════════════════════════════════════════════════
+function renderLog() {
   const log = document.getElementById('pointLog');
-  if (surveyData.length === 0) { log.innerHTML = '<p style="color:var(--text3);font-size:12px;text-align:center;padding:16px;">No points recorded.</p>'; return; }
-  const recent = surveyData.slice(-50).reverse();
-  log.innerHTML = recent.map(r => {
-    const cls = r.type === 'Route Point' ? 'route' : r.type.includes('Photo') ? 'photo' : 'manual';
-    return `<div class="point-row">
-      <span class="pt-num">${r.point}</span>
+  const filtered = logFilter === 'all' ? surveyData :
+    logFilter === 'manual' ? surveyData.filter(r=>r.type!=='Route Point') :
+    surveyData.filter(r=>r.type==='Route Point');
+  document.getElementById('logCount').textContent = filtered.length + ' points';
+  log.innerHTML = '';
+
+  const show = filtered.slice(-100).reverse(); // last 100
+  show.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'point-row';
+    const typeKey = r.type === 'Route Point' ? 'route' :
+      r.type === 'Start' ? 'start' : r.type === 'End' ? 'end' :
+      r.type === 'Chainage' ? 'chainage' : 'manual';
+    div.innerHTML = `
+      <span class="pt-num">#${r.point}</span>
       <span class="pt-coord">${r.lat}, ${r.lng}</span>
-      <span class="pt-type ${cls}">${r.type.split(' ')[0]}</span>
-    </div>`;
-  }).join('');
+      <span class="pt-acc">±${r.acc}m</span>
+      <span class="pt-badge badge-${typeKey}">${r.type.length>10?r.type.slice(0,8)+'…':r.type}</span>`;
+    log.appendChild(div);
+  });
+
+  // Segment log
+  renderSegLog();
 }
 
-// ══════════════════════════════════════════════
-//  CAMERA / WATERMARK (CRASH FIX FOR GITHUB)
-// ══════════════════════════════════════════════
-function capturePhoto() {
-  const fileInput = document.getElementById('cameraInput');
-  if (!fileInput.files.length) return;
-  setStatus('warn', '⌛', 'Stamping GPS watermark…');
+function filterLog(f) {
+  logFilter = f;
+  ['all','manual','route'].forEach(x => document.getElementById('f-'+x).classList.remove('btn-primary'));
+  document.getElementById('f-'+f).classList.add('btn-primary');
+  renderLog();
+}
 
-  const doStamp = (pos) => {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    const acc = pos.coords.accuracy;
-    const alt = pos.coords.altitude;
+function renderSegLog() {
+  const seg = document.getElementById('segLog');
+  seg.innerHTML = '';
+  let cumDist = 0, lastCh = 0;
+  const marked = surveyData.filter(r=>r.type!=='Route Point');
+  if (!marked.length) { seg.innerHTML = '<div style="padding:12px;font-size:11px;color:var(--text3);">No marked points yet</div>'; return; }
+  marked.forEach((r,i) => {
+    if (i>0) {
+      const prev = marked[i-1];
+      cumDist += haversine(+prev.lat,+prev.lng,+r.lat,+r.lng);
+    }
+    const div = document.createElement('div');
+    div.className = 'seg-row';
+    div.innerHTML = `<span class="seg-ch">${r.chainage||'—'}</span><span class="seg-info">${r.type}: ${r.remarks}</span><span class="seg-dist">±${r.accuracy}m</span>`;
+    seg.appendChild(div);
+  });
+}
 
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width; canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
+// ══════════════════════════════════════════════════════
+//  PLOT DATA ON MAP (restore)
+// ══════════════════════════════════════════════════════
+function plotDataOnMap() {
+  if (!surveyData.length) return;
+  markersLayer1.clearLayers();
+  const lls = surveyData.map(r=>[+r.lat,+r.lng]);
+  polyline1.setLatLngs(lls);
+  polyline4.setLatLngs(lls);
 
-        const dmsLat = toDMS(lat, true);
-        const dmsLng = toDMS(lng, false);
-        const dateStr = new Date().toLocaleDateString('en-GB').replace(/\//g,'-');
-        const timeStr = new Date().toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
-        const altStr = alt ? alt.toFixed(1) + ' m' : '12.71 m';
-        const roadName = document.getElementById("attrRoadName").value.trim() || "Road";
-        const ptNum = pointCounter;
+  const colors = {Start:'#10b981', End:'#f59e0b', Chainage:'#8b5cf6', Culvert:'#06b6d4', Bridge:'#6366f1',
+    Intersection:'#f97316', Damaged:'#ef4444', Pothole:'#ef4444', Landmark:'#10b981', Drain:'#3b82f6', Other:'#94a3b8'};
 
-        const lines = [
-          `📍 ${roadName}`,
-          `Lat: ${dmsLat}`,
-          `Lon: ${dmsLng}`,
-          `Alt: ${altStr}  Acc: ±${acc.toFixed(0)} m`,
-          `${dateStr}  ${timeStr}`,
-          `Alliance Survey Pro`
-        ];
+  surveyData.forEach(r => {
+    if (r.type === 'Route Point') {
+      L.circleMarker([+r.lat,+r.lng],{radius:2, fillColor:'#3b82f6', color:'#000',weight:0.3,fillOpacity:0.6,interactive:false}).addTo(markersLayer1);
+    } else {
+      const col = colors[r.type] || '#ef4444';
+      L.circleMarker([+r.lat,+r.lng],{radius:9,fillColor:col,color:'#fff',weight:2.5,fillOpacity:1})
+        .addTo(markersLayer1)
+        .bindPopup(`<b>${r.type} #${r.point}</b><br>Ch: ${r.chainage||'—'}<br>Acc: ${r.accuracy}m<br>${r.remarks}`);
+    }
+  });
 
-        const fs = Math.max(canvas.width * 0.018, 13);
-        ctx.font = `${fs}px monospace`;
-        const lh = fs * 1.4;
-        let maxW = 0;
-        lines.forEach(l => { maxW = Math.max(maxW, ctx.measureText(l).width); });
+  const bounds = L.latLngBounds(lls);
+  if (bounds.isValid()) map1.fitBounds(bounds,{padding:[30,30]});
+}
 
-        const mg = fs * 0.7;
-        const bw = maxW + mg * 2;
-        const bh = lines.length * lh + mg * 2;
+// ══════════════════════════════════════════════════════
+//  ROAD INFO
+// ══════════════════════════════════════════════════════
+function syncRoadName() {
+  document.getElementById('headerRoadName').textContent = document.getElementById('attrRoadName').value || 'No road set';
+  saveAttr();
+}
 
-        ctx.fillStyle = "rgba(0,0,0,0.6)";
-        ctx.fillRect(mg, canvas.height - bh - mg, bw, bh);
-        ctx.fillStyle = "#3b82f6";
-        ctx.fillRect(mg, canvas.height - bh - mg, 3, bh);
+function selectCondition(c) {
+  selectedCondition = c;
+  ['Good','Fair','Poor'].forEach(x => {
+    document.getElementById('cond-'+x).className = 'cond-btn';
+  });
+  const cls = c==='Good'?'sel-good':c==='Fair'?'sel-fair':'sel-poor';
+  document.getElementById('cond-'+c).className = 'cond-btn '+cls;
+  saveAttr();
+}
 
-        ctx.fillStyle = "#ffffff";
-        ctx.textBaseline = "top";
-        lines.forEach((line, i) => {
-          ctx.fillText(line, mg + 3 + mg * 0.5, canvas.height - bh - mg + mg + i * lh);
-        });
-
-        ctx.fillStyle = "#f59e0b";
-        ctx.beginPath();
-        ctx.arc(canvas.width - 20, 20, 8, 0, Math.PI * 2);
-        ctx.fill();
-
-        // CHANGED FOR GITHUB: Using Blob Object URL to prevent data URL crash limits on mobile chrome
-        canvas.toBlob(function(blob) {
-          const blobUrl = URL.createObjectURL(blob);
-          const fileName = `IMG_${roadName}_Pt${ptNum}.jpg`;
-          downloadFile(blobUrl, fileName);
-          
-          // Free resources after short delay
-          setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
-
-          const latLng = [lat, lng];
-          L.circleMarker(latLng, { radius: 9, fillColor: "#f59e0b", color: "#000", weight: 2, fillOpacity: 1 })
-            .addTo(map1).bindPopup(`<b>📷 Photo Point ${ptNum}</b>`);
-
-          surveyData.push({
-            point: pointCounter++, lat: lat.toFixed(7), lng: lng.toFixed(7),
-            alt: altStr, accuracy: acc.toFixed(1),
-            time: timeStr, type: "Photo Point",
-            remarks: `Photo: ${fileName}`
-          });
-          photoCount++;
-          document.getElementById('metPts').textContent = surveyData.length;
-          setStatus('tracking', '📷', 'Photo captured with GPS watermark ✔');
-          toast('📷 Photo saved with GPS stamp');
-          refreshPointLog();
-        }, 'image/jpeg', 0.92);
-
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(fileInput.files[0]);
+function getAttr() {
+  return {
+    roadName:   document.getElementById('attrRoadName').value,
+    roadCode:   document.getElementById('attrRoadCode').value,
+    roadType:   document.getElementById('attrRoadType').value,
+    from:       document.getElementById('attrFrom').value,
+    to:         document.getElementById('attrTo').value,
+    district:   document.getElementById('attrDistrict').value,
+    state:      document.getElementById('attrState').value,
+    block:      document.getElementById('attrBlock').value,
+    gp:         document.getElementById('attrGP').value,
+    date:       document.getElementById('attrDate').value,
+    surveyor:   document.getElementById('attrSurveyor').value,
+    cwWidth:    document.getElementById('attrCWWidth').value,
+    rwWidth:    document.getElementById('attrRWWidth').value,
+    roadLength: document.getElementById('attrRoadLength').value,
+    lanes:      document.getElementById('attrLanes').value,
+    embankment: document.getElementById('attrEmbankment').value,
+    shoulder:   document.getElementById('attrShoulder').value,
+    surface:    document.getElementById('attrSurface').value,
+    pavAge:     document.getElementById('attrPavAge').value,
+    condition:  selectedCondition,
+    distress:   document.getElementById('attrDistress').value,
+    drainL:     document.getElementById('attrDrainL').value,
+    drainR:     document.getElementById('attrDrainR').value,
+    culverts:   document.getElementById('attrCulverts').value,
+    bridges:    document.getElementById('attrBridges').value,
+    drainCond:  document.getElementById('attrDrainCond').value,
+    terrain:    document.getElementById('attrTerrain').value,
+    soil:       document.getElementById('attrSoil').value,
+    landUse:    document.getElementById('attrLandUse').value,
+    scheme:     document.getElementById('attrScheme').value,
+    agreement:  document.getElementById('attrAgreement').value,
+    cost:       document.getElementById('attrCost').value,
+    priority:   document.getElementById('attrPriority').value,
+    remarks:    document.getElementById('attrRemarks').value,
   };
+}
 
-  if (latestPosition && latestPosition.coords.accuracy <= 30) {
-    doStamp(latestPosition);
+function setAttr(m) {
+  const safe = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val||''; };
+  safe('attrRoadName', m.roadName); safe('attrRoadCode', m.roadCode);
+  safe('attrRoadType', m.roadType); safe('attrFrom', m.from); safe('attrTo', m.to);
+  safe('attrDistrict', m.district); safe('attrState', m.state);
+  safe('attrBlock', m.block); safe('attrGP', m.gp);
+  safe('attrDate', m.date); safe('attrSurveyor', m.surveyor);
+  safe('attrCWWidth', m.cwWidth); safe('attrRWWidth', m.rwWidth);
+  safe('attrRoadLength', m.roadLength); safe('attrLanes', m.lanes);
+  safe('attrEmbankment', m.embankment); safe('attrShoulder', m.shoulder);
+  safe('attrSurface', m.surface); safe('attrPavAge', m.pavAge);
+  safe('attrDistress', m.distress);
+  safe('attrDrainL', m.drainL); safe('attrDrainR', m.drainR);
+  safe('attrCulverts', m.culverts); safe('attrBridges', m.bridges);
+  safe('attrDrainCond', m.drainCond);
+  safe('attrTerrain', m.terrain); safe('attrSoil', m.soil); safe('attrLandUse', m.landUse);
+  safe('attrScheme', m.scheme); safe('attrAgreement', m.agreement);
+  safe('attrCost', m.cost); safe('attrPriority', m.priority);
+  safe('attrRemarks', m.remarks);
+  if (m.condition) selectCondition(m.condition);
+  syncRoadName();
+}
+
+function saveAttr() { localStorage.setItem('rsp7_attr', JSON.stringify(getAttr())); }
+function restoreAttr() {
+  const s = localStorage.getItem('rsp7_attr');
+  if (s) try { setAttr(JSON.parse(s)); } catch(e){}
+}
+
+// ══════════════════════════════════════════════════════
+//  SESSION STORAGE
+// ══════════════════════════════════════════════════════
+function saveSession() {
+  const payload = { surveyData, pointCounter, totalDistance, photoStore, photoCount };
+  localStorage.setItem('rsp7_session', JSON.stringify(payload));
+}
+
+function restoreSession() {
+  const s = localStorage.getItem('rsp7_session');
+  if (!s) return false;
+  try {
+    const p = JSON.parse(s);
+    surveyData = p.surveyData || [];
+    pointCounter = p.pointCounter || 1;
+    totalDistance = p.totalDistance || 0;
+    photoStore = p.photoStore || [];
+    photoCount = p.photoCount || 0;
+    updateChainage();
+    renderPhotoGrid();
+    return true;
+  } catch(e) { return false; }
+}
+
+// ══════════════════════════════════════════════════════
+//  DRIVE SYNC
+// ══════════════════════════════════════════════════════
+function uploadBackupToDrive() {
+  if (!surveyData.length) { toast('⚠ No data to upload'); return; }
+  const rName = document.getElementById('attrRoadName').value || 'Road';
+  const payload = { version:'7.0', surveyData, pointCounter, totalDistance, photoStore, photoCount, attr: getAttr() };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `SURVEY_${rName.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  toast('⬆️ Session file ready — upload to Google Drive manually');
+}
+
+function triggerDriveFetch() { document.getElementById('driveFileHook').click(); }
+
+function executeDriveSync(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const p = JSON.parse(e.target.result);
+      surveyData = p.surveyData || [];
+      pointCounter = p.pointCounter || 1;
+      totalDistance = p.totalDistance || 0;
+      photoStore = p.photoStore || [];
+      photoCount = p.photoCount || 0;
+      if (p.attr) setAttr(p.attr);
+      saveSession(); saveAttr();
+      plotDataOnMap(); updateMetrics(); updateChainage(); renderPhotoGrid();
+      toast(`📥 Loaded: ${surveyData.length} points`);
+    } catch(err) { toast('⚠ Error parsing file'); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function exportSession() { uploadBackupToDrive(); }
+
+// ══════════════════════════════════════════════════════
+//  EXPORT: KML (CURVE-AWARE + CHAINAGE MARKERS)
+// ══════════════════════════════════════════════════════
+function exportKML(mode) {
+  const attr = getAttr();
+  const rName = attr.roadName || 'Road';
+
+  if (!surveyData.length && !(finalData||[]).length) { toast('⚠ No survey data to export'); return; }
+
+  // Use finalized data if saved, else raw
+  const allData = getExportData();
+  function dpSimplify(pts, epsilon) {
+    if (pts.length < 3) return pts;
+    let maxDist = 0, maxIdx = 0;
+    const start = pts[0], end = pts[pts.length-1];
+    const dx = +end.lng - +start.lng, dy = +end.lat - +start.lat;
+    const len = Math.sqrt(dx*dx+dy*dy);
+    for (let i = 1; i < pts.length-1; i++) {
+      const dist = len===0 ? 0 : Math.abs(dy*(+pts[i].lng - +start.lng) - dx*(+pts[i].lat - +start.lat)) / len;
+      if (dist > maxDist) { maxDist = dist; maxIdx = i; }
+    }
+    if (maxDist > epsilon) {
+      const left  = dpSimplify(pts.slice(0, maxIdx+1), epsilon);
+      const right = dpSimplify(pts.slice(maxIdx), epsilon);
+      return [...left.slice(0,-1), ...right];
+    }
+    return [start, end];
+  }
+
+  // ── Step 2: Cubic hermite curve interpolation for smooth bends ──
+  function hermiteInterp(pts, steps) {
+    if (pts.length < 2) return pts;
+    const out = [];
+    for (let i = 0; i < pts.length-1; i++) {
+      const p0 = pts[Math.max(0,i-1)], p1 = pts[i], p2 = pts[i+1], p3 = pts[Math.min(pts.length-1,i+2)];
+      for (let s = 0; s < steps; s++) {
+        const t = s/steps;
+        const t2=t*t, t3=t2*t;
+        const h1=2*t3-3*t2+1, h2=-2*t3+3*t2, h3=t3-2*t2+t, h4=t3-t2;
+        const m0lat=0.5*((+p2.lat)-(+p0.lat)), m1lat=0.5*((+p3.lat)-(+p1.lat));
+        const m0lng=0.5*((+p2.lng)-(+p0.lng)), m1lng=0.5*((+p3.lng)-(+p1.lng));
+        out.push({ lat:(h1*(+p1.lat)+h2*(+p2.lat)+h3*m0lat+h4*m1lat).toFixed(7),
+                   lng:(h1*(+p1.lng)+h2*(+p2.lng)+h3*m0lng+h4*m1lng).toFixed(7) });
+      }
+    }
+    out.push(pts[pts.length-1]);
+    return out;
+  }
+
+  // ── Step 3: Build centreline using finalized data ──
+  const rawPts = allData;
+  // Simplify with epsilon 0.00003° (~3m) for best-fit straight segments
+  const simplified = dpSimplify(rawPts, 0.000025);
+  // Hermite smooth the simplified line
+  const smoothed = hermiteInterp(simplified, 6);
+
+  const coords = smoothed.map(p => `${p.lng},${p.lat},0`).join('\n');
+
+  // ── Step 4: Chainage placemark every 100m along centreline ──
+  function chainageMarkers() {
+    const marks = [];
+    let cum = 0, nextCh = 0;
+    const allPts = smoothed;
+    if (!allPts.length) return marks;
+    marks.push({ km: 0, lat: allPts[0].lat, lng: allPts[0].lng }); // CH-0+000
+    for (let i = 1; i < allPts.length; i++) {
+      const d = haversine(+allPts[i-1].lat,+allPts[i-1].lng,+allPts[i].lat,+allPts[i].lng);
+      const prev = cum;
+      cum += d;
+      // interpolate 100m intervals within this segment
+      while (nextCh + 100 <= cum) {
+        nextCh += 100;
+        const f = (nextCh - prev) / (cum - prev || 1);
+        const lat = (+allPts[i-1].lat + (+allPts[i].lat - +allPts[i-1].lat)*f).toFixed(7);
+        const lng = (+allPts[i-1].lng + (+allPts[i].lng - +allPts[i-1].lng)*f).toFixed(7);
+        marks.push({ km: nextCh/1000, lat, lng });
+      }
+    }
+    return marks;
+  }
+
+  const chMarks = chainageMarkers();
+
+  function fmtCh(km) {
+    const m = Math.round(km*1000);
+    return 'CH-' + Math.floor(m/1000) + '+' + String(m%1000).padStart(3,'0');
+  }
+
+  // KML red dot style for chainage
+  const chPlacemarks = chMarks.map(m => `
+    <Placemark>
+      <name>${fmtCh(m.km)}</name>
+      <description>${fmtCh(m.km)} (${(m.km).toFixed(3)} km)</description>
+      <styleUrl>#chainageStyle</styleUrl>
+      <Point><coordinates>${m.lng},${m.lat},0</coordinates></Point>
+    </Placemark>`).join('\n');
+
+  // ── Step 5: Marked point placemarks ──
+  let placemarks = '';
+  if (mode === 'full') {
+    allData.filter(r=>r.type!=='Route Point').forEach(r => {
+      const icon = {Start:'http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png',
+        End:'http://maps.google.com/mapfiles/kml/pushpin/red-pushpin.png',
+        Culvert:'http://maps.google.com/mapfiles/kml/paddle/wht-blank.png',
+        Bridge:'http://maps.google.com/mapfiles/kml/paddle/blu-blank.png',
+        Damaged:'http://maps.google.com/mapfiles/kml/paddle/red-blank.png',
+        Chainage:'http://maps.google.com/mapfiles/kml/paddle/purple-blank.png'
+      }[r.type] || 'http://maps.google.com/mapfiles/kml/paddle/ylw-blank.png';
+      placemarks += `<Placemark>
+        <name>${r.type} #${r.point} [Ch:${r.chainage||'—'}]</name>
+        <description><![CDATA[<b>Type:</b> ${r.type}<br><b>Chainage:</b> ${r.chainage||'—'}<br><b>Accuracy:</b> ${r.accuracy}m<br><b>Remarks:</b> ${r.remarks}<br><b>Road:</b> ${rName}]]></description>
+        <Style><IconStyle><Icon><href>${icon}</href></Icon></IconStyle></Style>
+        <Point><coordinates>${r.lng},${r.lat},0</coordinates></Point>
+      </Placemark>`;
+    });
+  }
+
+  const kml = `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+  <name>${rName}</name>
+  <description>Road: ${rName} | District: ${attr.district} | Surveyor: ${attr.surveyor} | Date: ${attr.date} | Distance: ${totalDistance.toFixed(3)}km | Points: ${allData.length} | Chainage Marks: ${chMarks.length}${finalData?'| ✅ FINALIZED':''}</description>
+
+  <Style id="roadLine">
+    <LineStyle><color>ff2163eb</color><width>4</width></LineStyle>
+    <PolyStyle><fill>0</fill></PolyStyle>
+  </Style>
+
+  <Style id="chainageStyle">
+    <IconStyle>
+      <color>ff0000ff</color>
+      <scale>0.8</scale>
+      <Icon><href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href></Icon>
+    </IconStyle>
+    <LabelStyle>
+      <color>ff0000ff</color>
+      <scale>0.75</scale>
+    </LabelStyle>
+  </Style>
+
+  <Folder>
+    <name>Centreline — Best Fit</name>
+    <Placemark>
+      <name>Centreline — ${rName}</name>
+      <styleUrl>#roadLine</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <altitudeMode>clampToGround</altitudeMode>
+        <coordinates>${coords}</coordinates>
+      </LineString>
+    </Placemark>
+  </Folder>
+
+  <Folder>
+    <name>Chainage Marks (100m interval)</name>
+    ${chPlacemarks}
+  </Folder>
+
+  ${mode === 'full' ? `<Folder><name>Survey Points</name>${placemarks}</Folder>` : ''}
+</Document>
+</kml>`;
+
+  const blob = new Blob([kml],{type:'application/vnd.google-earth.kml+xml'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `KML_${rName.replace(/\s+/g,'_')}_${mode}.kml`;
+  a.click();
+  toast(`🗺️ KML exported — ${chMarks.length} chainage marks + ${smoothed.length} centreline pts`);
+}
+
+// ══════════════════════════════════════════════════════
+//  EXPORT: CSV
+// ══════════════════════════════════════════════════════
+function exportCSV(mode) {
+  const attr = getAttr();
+  const rName = attr.roadName || 'Road';
+  const source = getExportData();
+  const data = mode === 'marked' ? source.filter(r=>r.type!=='Route Point') : source;
+  let csv = 'Point,Latitude,Longitude,Accuracy(m),Type,Chainage,Remarks,Timestamp\n';
+  data.forEach(r => {
+    const ts = r.ts ? new Date(r.ts).toISOString() : '';
+    csv += `${r.point},${r.lat},${r.lng},${r.accuracy},${r.type},${r.chainage||''},"${r.remarks}",${ts}\n`;
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download = `CSV_${rName.replace(/\s+/g,'_')}_${mode}.csv`;
+  a.click();
+}
+
+// ══════════════════════════════════════════════════════
+//  EXPORT: ATTRIBUTE REPORT
+// ══════════════════════════════════════════════════════
+function exportAttributeReport() {
+  const attr = getAttr();
+  const now = new Date().toLocaleString('en-IN');
+  const marked = surveyData.filter(r=>r.type!=='Route Point');
+  let rows = '';
+  marked.forEach(r => {
+    rows += `<tr><td>${r.point}</td><td>${r.chainage||'—'}</td><td>${r.type}</td><td>${r.lat},${r.lng}</td><td>±${r.accuracy}m</td><td>${r.remarks}</td></tr>`;
+  });
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Road Survey Report — ${attr.roadName}</title>
+  <style>body{font-family:Arial,sans-serif;padding:20px;color:#222;}
+  h1{font-size:20px;color:#1e3a8a;}h2{font-size:14px;border-bottom:2px solid #1e3a8a;padding-bottom:5px;color:#1e3a8a;margin-top:20px;}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px;}
+  th{background:#1e3a8a;color:#fff;padding:6px 10px;text-align:left;}
+  td{padding:5px 10px;border-bottom:1px solid #ddd;}
+  .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+  .info-box{background:#f0f4ff;padding:10px;border-radius:6px;}
+  .info-box .lbl{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:0.5px;}
+  .info-box .val{font-size:14px;font-weight:700;}
+  </style></head><body>
+  <h1>🛣️ Road Survey Report — ${attr.roadName||'Unnamed'}</h1>
+  <p style="font-size:12px;color:#666;">Generated: ${now} | Surveyor: ${attr.surveyor} | App: Road Survey Pro 7.0</p>
+  <h2>Road Identity</h2>
+  <div class="info-grid">
+    <div class="info-box"><div class="lbl">Road Name</div><div class="val">${attr.roadName||'—'}</div></div>
+    <div class="info-box"><div class="lbl">Road Code</div><div class="val">${attr.roadCode||'—'}</div></div>
+    <div class="info-box"><div class="lbl">Road Type</div><div class="val">${attr.roadType||'—'}</div></div>
+    <div class="info-box"><div class="lbl">From</div><div class="val">${attr.from||'—'}</div></div>
+    <div class="info-box"><div class="lbl">To</div><div class="val">${attr.to||'—'}</div></div>
+    <div class="info-box"><div class="lbl">District</div><div class="val">${attr.district||'—'}</div></div>
+    <div class="info-box"><div class="lbl">State</div><div class="val">${attr.state||'—'}</div></div>
+    <div class="info-box"><div class="lbl">Block/GP</div><div class="val">${attr.block||'—'} / ${attr.gp||'—'}</div></div>
+    <div class="info-box"><div class="lbl">Scheme</div><div class="val">${attr.scheme||'—'}</div></div>
+  </div>
+  <h2>Structural Data</h2>
+  <div class="info-grid">
+    <div class="info-box"><div class="lbl">Carriageway Width</div><div class="val">${attr.cwWidth||'—'} m</div></div>
+    <div class="info-box"><div class="lbl">Roadway Width</div><div class="val">${attr.rwWidth||'—'} m</div></div>
+    <div class="info-box"><div class="lbl">Road Length</div><div class="val">${attr.roadLength||totalDistance.toFixed(3)} km</div></div>
+    <div class="info-box"><div class="lbl">Surface Type</div><div class="val">${attr.surface||'—'}</div></div>
+    <div class="info-box"><div class="lbl">Condition</div><div class="val">${attr.condition||'—'}</div></div>
+    <div class="info-box"><div class="lbl">Lanes</div><div class="val">${attr.lanes||'—'}</div></div>
+    <div class="info-box"><div class="lbl">Drain L/R</div><div class="val">${attr.drainL||'—'} / ${attr.drainR||'—'}</div></div>
+    <div class="info-box"><div class="lbl">Culverts</div><div class="val">${attr.culverts||'0'}</div></div>
+    <div class="info-box"><div class="lbl">Bridges</div><div class="val">${attr.bridges||'0'}</div></div>
+    <div class="info-box"><div class="lbl">Terrain</div><div class="val">${attr.terrain||'—'}</div></div>
+    <div class="info-box"><div class="lbl">Soil Type</div><div class="val">${attr.soil||'—'}</div></div>
+    <div class="info-box"><div class="lbl">GPS Points</div><div class="val">${surveyData.length}</div></div>
+  </div>
+  <h2>Remarks</h2>
+  <p style="font-size:12px;">${attr.remarks||'None'}</p>
+  <h2>Field Observations (Marked Points: ${marked.length})</h2>
+  <table><thead><tr><th>#</th><th>Chainage</th><th>Type</th><th>Coordinates</th><th>Accuracy</th><th>Remarks</th></tr></thead>
+  <tbody>${rows||'<tr><td colspan="6" style="text-align:center;color:#999;">No marked points</td></tr>'}</tbody></table>
+  </body></html>`;
+
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  a.download = `Report_${(attr.roadName||'Road').replace(/\s+/g,'_')}.html`;
+  a.click();
+  toast('📋 Road Attribute Report exported');
+}
+
+// ══════════════════════════════════════════════════════
+//  CLEAR SESSION
+// ══════════════════════════════════════════════════════
+function clearSession() {
+  if (!confirm('Reset all survey data? This cannot be undone.')) return;
+  localStorage.clear();
+  location.reload();
+}
+
+// ══════════════════════════════════════════════════════
+//  CORRECTION — SMART ADD POINT (insert after chosen point)
+// ══════════════════════════════════════════════════════
+let addPointModeActive = false;
+let deleteModeActive   = false;
+let lastAddedPointIdx  = -1;
+
+// Populate the "Insert After Point #" dropdown
+function refreshInsertDropdown() {
+  const sel = document.getElementById('insertAfterPt');
+  if (!sel) return;
+  sel.innerHTML = '<option value="end">— Append at End —</option>';
+  surveyData.forEach((r, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `#${r.point} [${r.chainage||'0+000'}] ${r.type}`;
+    sel.appendChild(opt);
+  });
+}
+
+function toggleAddPointMode() {
+  if (deleteModeActive) toggleDeleteMode(); // cancel delete if active
+  addPointModeActive = !addPointModeActive;
+  const btn    = document.getElementById('addPtModeBtn');
+  const status = document.getElementById('addPtStatus');
+  if (addPointModeActive) {
+    btn.textContent = '🔴 Stop Adding';
+    btn.style.background = 'var(--red)';
+    status.style.display = 'block';
+    refreshInsertDropdown();
+    map4.on('click', handleMapAddPoint);
+    map4.getContainer().style.cursor = 'crosshair';
   } else {
-    navigator.geolocation.getCurrentPosition(doStamp,
-      () => setStatus('error','❌','GPS error during photo capture'),
-      { enableHighAccuracy: true, timeout: 10000 });
+    btn.textContent = '➕ Enable Click-to-Add';
+    btn.style.background = '';
+    status.style.display = 'none';
+    map4.off('click', handleMapAddPoint);
+    map4.getContainer().style.cursor = '';
   }
 }
 
-// ══════════════════════════════════════════════
-//  EXPORTS
-// ══════════════════════════════════════════════
-function exportKML() {
-  if (!surveyData.length) { toast("⚠ No data to export"); return; }
-  const rName = document.getElementById("attrRoadName").value || "Road";
-  let coords = "", marks = "";
-  surveyData.forEach(r => {
-    const a = r.alt === 'N/A' ? 0 : parseFloat(r.alt) || 0;
-    coords += `${r.lng},${r.lat},${a}\n`;
-    if (r.type !== "Route Point") {
-      marks += `<Placemark><name>Pt${r.point} [${r.type}]</name><description>${r.remarks}</description><Point><coordinates>${r.lng},${r.lat},${a}</coordinates></Point></Placemark>`;
+function handleMapAddPoint(e) {
+  if (!addPointModeActive) return;
+  const lat = e.latlng.lat, lng = e.latlng.lng;
+  const ptype   = document.getElementById('newPtType').value;
+  const selVal  = document.getElementById('insertAfterPt').value;
+
+  // Determine insert position
+  let insertIdx; // index in surveyData AFTER which new point goes
+  if (selVal === 'end' || surveyData.length === 0) {
+    insertIdx = surveyData.length; // append
+  } else {
+    insertIdx = parseInt(selVal) + 1; // insert AFTER chosen point
+  }
+
+  // Compute chainage at insert position
+  let cumDist = 0;
+  for (let i = 1; i < Math.min(insertIdx, surveyData.length); i++) {
+    cumDist += haversine(+surveyData[i-1].lat, +surveyData[i-1].lng,
+                         +surveyData[i].lat,   +surveyData[i].lng) / 1000;
+  }
+  if (insertIdx > 0 && insertIdx <= surveyData.length) {
+    const prev = surveyData[insertIdx - 1];
+    cumDist += haversine(+prev.lat, +prev.lng, lat, lng) / 1000;
+  }
+
+  const ch = formatChainage(cumDist);
+  const pt = {
+    point: pointCounter++, lat: lat.toFixed(7), lng: lng.toFixed(7),
+    accuracy: '0.0', type: ptype, remarks: 'Added on map',
+    chainage: ch, heading: null, alt: null, ts: Date.now()
+  };
+
+  // Insert into array at correct position
+  surveyData.splice(insertIdx, 0, pt);
+  lastAddedPointIdx = insertIdx;
+
+  refreshPolylines();
+  saveSession();
+  activateCorrection(); // reload all draggable markers + click handlers
+  refreshInsertDropdown();
+  toast(`✅ ${ptype} inserted after point ${insertIdx} at Ch ${ch}`);
+  renderLog();
+}
+
+function undoLastAdded() {
+  if (lastAddedPointIdx < 0 || lastAddedPointIdx >= surveyData.length) { toast('⚠ Nothing to undo'); return; }
+  surveyData.splice(lastAddedPointIdx, 1);
+  pointCounter = Math.max(1, pointCounter - 1);
+  lastAddedPointIdx = -1;
+  refreshPolylines(); saveSession();
+  activateCorrection();
+  refreshInsertDropdown();
+  renderLog();
+  toast('↩ Last added point removed');
+}
+
+// ══════════════════════════════════════════════════════
+//  CORRECTION — CLICK-TO-DELETE
+// ══════════════════════════════════════════════════════
+function toggleDeleteMode() {
+  if (addPointModeActive) toggleAddPointMode(); // cancel add if active
+  deleteModeActive = !deleteModeActive;
+  const btn    = document.getElementById('deleteModeBtn');
+  const status = document.getElementById('deleteModeStatus');
+  if (deleteModeActive) {
+    btn.textContent = '🔴 Stop Deleting';
+    btn.style.background = 'var(--orange)';
+    status.style.display = 'block';
+    // Rebind markers with delete-click
+    activateCorrection(true);
+  } else {
+    btn.textContent = '🗑️ Enable Click-to-Delete';
+    btn.style.background = '';
+    status.style.display = 'none';
+    activateCorrection(false);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  CORRECTION PANEL — core
+// ══════════════════════════════════════════════════════
+function activateCorrection(deleteMode) {
+  if (deleteMode === undefined) deleteMode = deleteModeActive;
+  correctionMarkers.forEach(m => corrMarkersLayer.removeLayer(m));
+  correctionMarkers = [];
+  let n = 0;
+  surveyData.forEach((node, idx) => {
+    const isSpecial = node.type !== 'Route Point';
+    const col = isSpecial
+      ? ({Start:'#10b981',End:'#f59e0b',Chainage:'#8b5cf6',Culvert:'#06b6d4',Bridge:'#6366f1'}[node.type]||'#ef4444')
+      : '#3b82f6';
+    const sz = isSpecial ? 13 : 10;
+    const m = L.marker([+node.lat, +node.lng], {
+      draggable: !deleteMode,
+      icon: L.divIcon({
+        html: `<div style="background:${col};width:${sz}px;height:${sz}px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.35);cursor:${deleteMode?'pointer':'grab'};"></div>`,
+        iconSize:[sz,sz], iconAnchor:[sz/2,sz/2]
+      })
+    }).addTo(corrMarkersLayer);
+
+    if (!deleteMode) {
+      m.on('dragend', () => {
+        const ll = m.getLatLng();
+        surveyData[idx].lat = ll.lat.toFixed(7);
+        surveyData[idx].lng = ll.lng.toFixed(7);
+        refreshPolylines(); saveSession();
+      });
+    } else {
+      m.on('click', () => {
+        if (!confirm(`Delete point #${node.point} [${node.chainage||'—'}] ${node.type}?`)) return;
+        surveyData.splice(idx, 1);
+        pointCounter = Math.max(1, pointCounter - 1);
+        refreshPolylines(); saveSession(); renderLog();
+        activateCorrection(true); // refresh
+        refreshInsertDropdown();
+        toast(`🗑 Point #${node.point} deleted`);
+      });
     }
+    correctionMarkers.push(m);
+    n++;
   });
-  const kml = `<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>${rName}</name><Style id="roadLine"><LineStyle><color>ffff8800</color><width>4</width></LineStyle></Style><Placemark><name>${rName} Centreline</name><styleUrl>#roadLine</styleUrl><LineString><tessellate>1</tessellate><coordinates>${coords}</coordinates></LineString></Placemark>${marks}</Document></kml>`;
-  const blob = new Blob([kml], { type: "application/vnd.google-earth.kml+xml" });
-  downloadFile(URL.createObjectURL(blob), `KML_${rName}.kml`);
-  toast('KML exported');
+  document.getElementById('corrStatus').textContent =
+    deleteMode ? `${n} points loaded — click any marker to delete`
+               : `${n} draggable points loaded. Drag to correct alignment.`;
+  centerMap4();
+}
+let finalData = null; // locked copy of corrected data
+
+function saveFinalData() {
+  if (!surveyData.length) { toast('⚠ No survey data to finalize'); return; }
+  finalData = JSON.parse(JSON.stringify(surveyData)); // deep copy
+  localStorage.setItem('rsp7_final', JSON.stringify({ finalData, totalDistance, ts: Date.now() }));
+  const st = document.getElementById('finalSaveStatus');
+  st.style.display = 'block';
+  st.style.background = 'rgba(5,150,105,0.1)';
+  st.style.border = '1px solid var(--green)';
+  st.style.color = 'var(--green)';
+  st.textContent = `✅ Finalized ${finalData.length} points at ${new Date().toLocaleTimeString('en-IN')}`;
+  document.getElementById('finalBadge').style.display = 'block';
+  toast(`💾 Data Finalized — ${finalData.length} points locked for export`);
 }
 
-function exportAllPointsCSV() {
-  if (!surveyData.length) { toast("⚠ No points to export"); return; }
-  const rName = document.getElementById("attrRoadName").value || "Road";
-  let csv = "Point,Latitude,Longitude,Elevation(m),Accuracy(m),Time,Type,Remarks\n";
-  surveyData.forEach(r => { csv += `${r.point},${r.lat},${r.lng},${r.alt},${r.accuracy},${r.time},${r.type},"${r.remarks}"\n`; });
-  downloadFile(URL.createObjectURL(new Blob([csv], {type:"text/csv"})), `Points_${rName}.csv`);
-  toast('Points CSV exported');
+function revertToRaw() {
+  if (!confirm('Revert to raw (unfinalized) GPS data? Final lock will be removed.')) return;
+  finalData = null;
+  localStorage.removeItem('rsp7_final');
+  document.getElementById('finalSaveStatus').style.display = 'none';
+  document.getElementById('finalBadge').style.display = 'none';
+  toast('↩ Reverted to raw GPS data');
 }
 
-function exportRoadDetailsCSV() {
-  const rName = document.getElementById("attrRoadName").value || "Road";
-  const fields = [
-    ["Surveyor", currentUser],
-    ["Road Name", rName],
-    ["Road Code", document.getElementById("attrRoadCode").value],
-    ["Road Type", document.getElementById("attrRoadType").value],
-    ["Carriageway", document.getElementById("attrCarriageway").value],
-    ["Roadway Width (m)", document.getElementById("attrRoadwayWidth").value],
-    ["Road Length (km)", document.getElementById("attrRoadLength").value],
-    ["Embankment", document.getElementById("attrEmbankment").value],
-    ["Surface Condition", document.getElementById("attrCondition").value],
-    ["Remarks", document.getElementById("attrRemarks").value],
-    ["Total Points", surveyData.length],
-    ["Total Distance (km)", totalDistance.toFixed(3)],
-    ["Photos Taken", photoCount],
-    ["Export Time", new Date().toLocaleString('en-GB')]
-  ];
-  let csv = "Parameter,Value\n" + fields.map(f => `"${f[0]}","${f[1]}"`).join("\n");
-  downloadFile(URL.createObjectURL(new Blob([csv], {type:"text/csv"})), `RoadDetails_${rName}.csv`);
-  toast('Road details CSV exported');
+function getExportData() {
+  // Always use finalData if available, else raw surveyData
+  return finalData || surveyData;
 }
 
-function exportGeoJSON() {
-  if (!surveyData.length) { toast("⚠ No data to export"); return; }
-  const rName = document.getElementById("attrRoadName").value || "Road";
-  const features = [{
-    type: "Feature",
-    properties: { name: rName, type: "road_centreline" },
-    geometry: { type: "LineString", coordinates: surveyData.map(r => [parseFloat(r.lng), parseFloat(r.lat)]) }
-  }];
-  surveyData.filter(r => r.type !== "Route Point").forEach(r => {
-    features.push({ type: "Feature", properties: { point: r.point, type: r.type, remarks: r.remarks, time: r.time, accuracy: r.accuracy }, geometry: { type: "Point", coordinates: [parseFloat(r.lng), parseFloat(r.lat)] } });
+// ══════════════════════════════════════════════════════
+//  ELEVATION PROFILE
+// ══════════════════════════════════════════════════════
+function renderProfile() {
+  const data = getExportData();
+  const pts = data.filter(r => r.alt != null && !isNaN(+r.alt));
+
+  document.getElementById('profileEmpty').style.display = pts.length < 2 ? 'block' : 'none';
+  if (pts.length < 2) {
+    document.getElementById('profileStatus').textContent = `⚠ Only ${pts.length} point(s) with altitude. Need at least 2.`;
+    return;
+  }
+
+  // Build distance-altitude pairs
+  let cumDist = 0;
+  const series = [{ d: 0, alt: +pts[0].alt, ch: pts[0].chainage || '0+000' }];
+  for (let i = 1; i < pts.length; i++) {
+    cumDist += haversine(+pts[i-1].lat, +pts[i-1].lng, +pts[i].lat, +pts[i].lng);
+    series.push({ d: cumDist, alt: +pts[i].alt, ch: pts[i].chainage || formatChainage(cumDist/1000) });
+  }
+
+  const alts = series.map(s => s.alt);
+  const minAlt = Math.min(...alts), maxAlt = Math.max(...alts);
+  const altRange = maxAlt - minAlt || 1;
+  const totalDist = series[series.length-1].d;
+
+  // Stats
+  let maxGrade = 0;
+  for (let i = 1; i < series.length; i++) {
+    const dh = Math.abs(series[i].alt - series[i-1].alt);
+    const dd = series[i].d - series[i-1].d || 1;
+    maxGrade = Math.max(maxGrade, (dh/dd)*100);
+  }
+  const totalRise = alts.reduce((sum,a,i)=>i>0?sum+Math.max(0,a-alts[i-1]):sum, 0);
+
+  document.getElementById('profMinRL').textContent = minAlt.toFixed(1);
+  document.getElementById('profMaxRL').textContent = maxAlt.toFixed(1);
+  document.getElementById('profTotalRise').textContent = totalRise.toFixed(1);
+  document.getElementById('profAvgRL').textContent = (alts.reduce((a,b)=>a+b,0)/alts.length).toFixed(1);
+  document.getElementById('profMaxGrade').textContent = maxGrade.toFixed(2);
+  document.getElementById('profPtCount').textContent = pts.length;
+  document.getElementById('profileStatsCard').style.display = 'block';
+  document.getElementById('profileStatus').textContent = `Profile: ${pts.length} points, ${(totalDist/1000).toFixed(3)} km`;
+
+  // Draw canvas
+  const wrap = document.getElementById('profileChartWrap');
+  const canvas = document.getElementById('profileCanvas');
+  const W = Math.max(wrap.clientWidth || 320, 320);
+  const H = 240;
+  canvas.width = W; canvas.height = H;
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  const PAD = {l:52, r:14, t:18, b:44};
+  const cW = W - PAD.l - PAD.r, cH = H - PAD.t - PAD.b;
+
+  // Grid
+  ctx.strokeStyle = '#dbe7fa'; ctx.lineWidth = 1;
+  const gridLines = 5;
+  for (let i = 0; i <= gridLines; i++) {
+    const y = PAD.t + (i/gridLines)*cH;
+    ctx.beginPath(); ctx.moveTo(PAD.l, y); ctx.lineTo(PAD.l+cW, y); ctx.stroke();
+    const rl = (maxAlt - (altRange * i/gridLines)).toFixed(1);
+    ctx.fillStyle = '#5b6b8c'; ctx.font = '9px monospace'; ctx.textAlign = 'right';
+    ctx.fillText(rl+'m', PAD.l-4, y+3);
+  }
+  // X-axis ticks
+  const xTicks = Math.min(10, Math.floor(totalDist/100));
+  for (let i = 0; i <= xTicks; i++) {
+    const d = (i/xTicks)*totalDist;
+    const x = PAD.l + (d/totalDist)*cW;
+    ctx.strokeStyle = '#dbe7fa'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, PAD.t); ctx.lineTo(x, PAD.t+cH); ctx.stroke();
+    ctx.fillStyle = '#5b6b8c'; ctx.font = '8px monospace'; ctx.textAlign = 'center';
+    ctx.fillText('CH-'+(Math.round(d/100)*100)+'m', x, PAD.t+cH+12);
+  }
+
+  // Area fill
+  ctx.beginPath();
+  ctx.moveTo(PAD.l + (series[0].d/totalDist)*cW, PAD.t + (1-(series[0].alt-minAlt)/altRange)*cH);
+  series.forEach(s => {
+    const x = PAD.l + (s.d/totalDist)*cW;
+    const y = PAD.t + (1-(s.alt-minAlt)/altRange)*cH;
+    ctx.lineTo(x, y);
   });
-  const gj = JSON.stringify({ type: "FeatureCollection", features }, null, 2);
-  downloadFile(URL.createObjectURL(new Blob([gj], {type:"application/geo+json"})), `GeoJSON_${rName}.geojson`);
-  toast('GeoJSON exported');
+  ctx.lineTo(PAD.l+cW, PAD.t+cH); ctx.lineTo(PAD.l, PAD.t+cH); ctx.closePath();
+  const grad = ctx.createLinearGradient(0, PAD.t, 0, PAD.t+cH);
+  grad.addColorStop(0, 'rgba(59,130,246,0.35)');
+  grad.addColorStop(1, 'rgba(59,130,246,0.03)');
+  ctx.fillStyle = grad; ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+  series.forEach((s, i) => {
+    const x = PAD.l + (s.d/totalDist)*cW;
+    const y = PAD.t + (1-(s.alt-minAlt)/altRange)*cH;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  // Dots at marked points
+  const marked = series.filter((_,i)=>pts[i]&&pts[i].type!=='Route Point');
+  marked.forEach(s => {
+    const x = PAD.l + (s.d/totalDist)*cW;
+    const y = PAD.t + (1-(s.alt-minAlt)/altRange)*cH;
+    ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fillStyle='#ef4444'; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+  });
+
+  // Axis labels
+  ctx.save(); ctx.translate(12, PAD.t+cH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#1d4ed8'; ctx.font='bold 10px Inter,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Altitude (RL m)', 0, 0); ctx.restore();
+  ctx.fillStyle='#1d4ed8'; ctx.font='bold 10px Inter,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Chainage (m)', PAD.l+cW/2, H-4);
 }
 
-function clearSession() {
-  if (!confirm("Clear ALL survey data? This cannot be undone.")) return;
-  surveyData = []; pointCounter = 1; photoCount = 0; totalDistance = 0;
-  polyline1.setLatLngs([]); polyline4.setLatLngs([]);
-  document.getElementById('metPts').textContent = '0';
-  document.getElementById('metDist').textContent = '0.00';
-  refreshPointLog(); refreshExportPanel();
-  toast('Session cleared');
+// ══════════════════════════════════════════════════════
+//  GPX EXPORT (for GPSVisualizer / Google Earth)
+// ══════════════════════════════════════════════════════
+function exportGPX() {
+  const data = getExportData();
+  const attr = getAttr();
+  if (!data.length) { toast('⚠ No data to export'); return; }
+  const rName = attr.roadName || 'Road';
+  const trkpts = data.map(r => {
+    const alt = r.alt != null ? `\n        <ele>${(+r.alt).toFixed(2)}</ele>` : '';
+    const ts  = r.ts  ? `\n        <time>${new Date(r.ts).toISOString()}</time>` : '';
+    return `      <trkpt lat="${r.lat}" lon="${r.lng}">${alt}${ts}\n      </trkpt>`;
+  }).join('\n');
+
+  const wpts = data.filter(r=>r.type!=='Route Point').map(r => {
+    const alt = r.alt != null ? `\n    <ele>${(+r.alt).toFixed(2)}</ele>` : '';
+    return `  <wpt lat="${r.lat}" lon="${r.lng}"><name>${r.type}: ${r.chainage||'—'}</name><desc>${r.remarks}</desc>${alt}</wpt>`;
+  }).join('\n');
+
+  const gpx = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Road Survey Pro 8.0"
+  xmlns="http://www.topografix.com/GPX/1/1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>${rName}</name>
+    <desc>District: ${attr.district} | Surveyor: ${attr.surveyor} | Date: ${attr.date} | Points: ${data.length}</desc>
+    <time>${new Date().toISOString()}</time>
+  </metadata>
+${wpts}
+  <trk>
+    <name>${rName} — Centreline</name>
+    <trkseg>
+${trkpts}
+    </trkseg>
+  </trk>
+</gpx>`;
+
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([gpx],{type:'application/gpx+xml'}));
+  a.download = `GPX_${rName.replace(/\s+/g,'_')}.gpx`;
+  a.click();
+  toast('⬇️ GPX exported — open in GPSVisualizer or Google Earth for RL profile');
 }
 
-function refreshExportPanel() {
-  document.getElementById('expPts').textContent = surveyData.length;
-  document.getElementById('expDist').textContent = totalDistance.toFixed(2);
-  document.getElementById('expPhotos').textContent = photoCount;
+function openGPSVisualizer() {
+  window.open('https://www.gpsvisualizer.com/profile', '_blank');
 }
 
-// ══════════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════════
-function haversine(lat1, lon1, lat2, lon2) {
-  const R = 6371000, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-}
-
-function bearing(lat1, lon1, lat2, lon2) {
-  const φ1 = lat1*Math.PI/180, φ2 = lat2*Math.PI/180;
-  const Δλ = (lon2-lon1)*Math.PI/180;
-  const y = Math.sin(Δλ)*Math.cos(φ2);
-  const x = Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
-  return (Math.atan2(y,x)*180/Math.PI + 360) % 360;
-}
-
-function toDMS(dd, isLat) {
-  const abs = Math.abs(dd);
-  const d = Math.floor(abs);
-  const mf = (abs-d)*60; const m = Math.floor(mf);
-  const s = Math.floor((mf-m)*60);
-  const dir = isLat ? (dd>=0?'N':'S') : (dd>=0?'E':'W');
-  return `${d}°${m}'${s}"${dir}`;
-}
-
-function syncRoadName() {
-  const n = document.getElementById("attrRoadName").value.trim();
-  document.getElementById("headerRoadName").textContent = n || "No road set";
-}
-
-function setStatus(type, icon, text) {
-  const bar = document.getElementById('statusBar');
-  bar.className = 'status-bar ' + type;
-  document.getElementById('statusText').textContent = text;
-  bar.querySelector('.status-icon').textContent = icon;
+// ══════════════════════════════════════════════════════
+//  UTILITY
+// ══════════════════════════════════════════════════════
+function haversine(lat1,lon1,lat2,lon2) {
+  const R=6371000, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
 function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid=setTimeout(()=>t.classList.remove('show'),3200);
 }
 
-function downloadFile(url, name) {
-  const a = document.createElement('a'); a.href = url; a.download = name;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-}
+// ══════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════
+buildUserGrid();
 </script>
 </body>
 </html>
