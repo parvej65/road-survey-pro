@@ -529,7 +529,16 @@ input[type="file"]{display:none;}
       <!-- Tracking Controls -->
       <div class="card">
         <div class="card-h"><span class="ch-icon">🎮</span>Tracking Controls</div>
-        <button class="btn btn-primary" id="startBtn" onclick="startTracking()">▶ AUTOMATIC</button>
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+          <div class="form-field" style="flex:0 0 92px;margin-bottom:0;">
+            <label>Interval (m)</label>
+            <input type="number" id="autoIntervalInput" min="1" max="500" step="1" value="5" inputmode="numeric" style="text-align:center;">
+          </div>
+          <button class="btn btn-primary" id="startBtn" onclick="startTracking()" style="flex:1;margin-top:0;">▶ AUTOMATIC</button>
+        </div>
+        <p style="font-size:10px;color:var(--text3);margin:6px 0 0;line-height:1.4;">
+          Set the auto point-capture distance (1–500 m), e.g. enter 5 for a point every 5 metres, then tap ▶ AUTOMATIC to start.
+        </p>
         <div class="btn-row" style="margin-top:7px;">
           <button class="btn btn-stop" id="stopBtn" onclick="stopTracking()" disabled style="flex:1;">⏹ STOP</button>
           <button class="btn btn-primary" id="markBtn" onclick="startMarkPoint()" disabled style="flex:1;background:linear-gradient(135deg,#dc2626,#ef4444);">
@@ -880,60 +889,6 @@ input[type="file"]{display:none;}
         <div id="corrStatus" style="font-size:11px;color:var(--cyan);margin-bottom:6px;"></div>
       </div>
 
-      <!-- ── ADD NEW POINT ── -->
-      <div class="card">
-        <div class="card-h"><span class="ch-icon">➕</span>Add New Point</div>
-        <p style="font-size:11px;color:var(--text2);margin-bottom:8px;line-height:1.5;">
-          <b>Step 1:</b> Select where to insert. <b>Step 2:</b> Click map → new point auto-fits into the line.
-        </p>
-        <div class="form-field" style="margin-bottom:7px;">
-          <label>Insert After Point #</label>
-          <select id="insertAfterPt" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;">
-            <option value="end">— Append at End —</option>
-          </select>
-        </div>
-        <div class="form-field" style="margin-bottom:7px;">
-          <label>New Point Type</label>
-          <select id="newPtType" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;">
-            <option value="Route Point">Route Point</option>
-            <option value="Chainage">Chainage Mark</option>
-            <option value="Culvert">Culvert</option>
-            <option value="Bridge">Bridge</option>
-            <option value="Start">Survey Start</option>
-            <option value="End">Survey End</option>
-            <option value="Damaged">Road Damage</option>
-            <option value="Landmark">Landmark</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-cyan btn-sm" id="addPtModeBtn" onclick="toggleAddPointMode()" style="color:#fff;flex:1;">
-            ➕ Enable Click-to-Add
-          </button>
-          <button class="btn btn-ghost btn-sm" onclick="undoLastAdded()" style="flex:1;">↩ Undo Last</button>
-        </div>
-        <div id="addPtStatus" style="font-size:11px;color:var(--purple);display:none;margin-top:7px;padding:6px 10px;background:rgba(124,58,237,0.1);border-radius:6px;border:1px solid rgba(124,58,237,0.3);">
-          🖱️ Click-to-Add ON — tap map to place point
-        </div>
-      </div>
-
-      <!-- ── DELETE POINT ── -->
-      <div class="card">
-        <div class="card-h"><span class="ch-icon">🗑️</span>Delete a Point</div>
-        <p style="font-size:11px;color:var(--text2);margin-bottom:8px;line-height:1.5;">
-          Enable delete mode → click any marker on the map → confirm to remove that point from the line.
-        </p>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-stop btn-sm" id="deleteModeBtn" onclick="toggleDeleteMode()" style="flex:1;font-size:12px;">
-            🗑️ Enable Click-to-Delete
-          </button>
-          <button class="btn btn-ghost btn-sm" onclick="deleteLastPoint()" style="flex:1;font-size:11px;">🗑️ Delete Last Point</button>
-        </div>
-        <div id="deleteModeStatus" style="font-size:11px;color:var(--red);display:none;margin-top:7px;padding:6px 10px;background:rgba(220,38,38,0.08);border-radius:6px;border:1px solid rgba(220,38,38,0.3);">
-          🔴 Delete mode ON — click any point marker to delete it
-        </div>
-      </div>
-
       <!-- ── FINALIZE / SAVE ── -->
       <div class="card" style="border:2px solid var(--green);background:rgba(5,150,105,0.05);">
         <div class="card-h"><span class="ch-icon">💾</span>Finalize &amp; Save Corrected Data</div>
@@ -1070,7 +1025,8 @@ input[type="file"]{display:none;}
         <p style="font-size:12px;color:var(--text2);line-height:1.7;">
           <b>GPS Signal Quality</b> — shows live accuracy (in metres), satellites, altitude, speed and heading. Green = good signal, yellow = fair, red = poor. Wait for green/yellow before marking points.<br><br>
           <b>Map</b> — switch between Satellite, Street and Topo views using the dropdown. Tap <b>🎯 Center</b> to jump the map to your current location.<br><br>
-          <b>▶ AUTOMATIC</b> — starts continuous GPS tracking. The app automatically logs route points as you move and the map auto-follows your live location. Road Name must be set first (in Road Info).<br><br>
+          <b>Interval (m)</b> — set the distance (1–500 metres) between automatically captured points before starting tracking, e.g. enter 5 for a point every 5 m.<br><br>
+          <b>▶ AUTOMATIC</b> — starts continuous GPS tracking. The app automatically logs route points at the interval you set above as you move, and the map auto-follows your live location. Road Name must be set first (in Road Info).<br><br>
           <b>⏹ STOP</b> — stops automatic tracking and saves the session.<br><br>
           <b>📍 MANUAL POINT</b> — captures a single point at your current location using GPS averaging (set the number of samples below — more samples = higher accuracy but takes longer). Use this for chainage marks, structures, damage, landmarks etc.<br><br>
           <b>Mark Point Settings</b> — choose the Point Type, add a Remark, and set Averaging Samples before tapping Manual Point.<br><br>
@@ -1177,6 +1133,7 @@ let totalDistance = 0;
 let correctionMarkers = [];
 let isTracking = false;
 let latestPos = null;
+let autoIntervalM = 5; // configurable auto point-capture interval (metres)
 let selectedCondition = '';
 let logFilter = 'all';
 
@@ -1275,18 +1232,18 @@ function initMaps() {
   // Map tiles - maxZoom:22 allows zooming to z22; maxNativeZoom:19 tells Leaflet
   // to upscale/stretch z19 tiles beyond z19 instead of going blank.
   // Esri Imagery native tiles exist up to z19; CartoDB up to z20.
-  sat1     = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:22, maxNativeZoom:19, attribution:'© Esri', tileSize:256, zoomOffset:0});
-  labels1  = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {maxZoom:22, maxNativeZoom:20, attribution:'© CartoDB'});
-  street1  = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:22, maxNativeZoom:20, attribution:'© CartoDB © OSM'});
-  esri1    = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom:22, maxNativeZoom:19, attribution:'© Esri'});
-  topo1    = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:22, maxNativeZoom:20, attribution:'© CartoDB'});
+// ════════ GOOGLE MAPS HIGH-ZOOM SERVER LINKS ════════
+  // lyrs=m (Street View), lyrs=s (Satellite Only), lyrs=p (Terrain), lyrs=y (Hybrid Satellite + Labels)
+  street1 = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 22, maxNativeZoom: 20, subdomains: ['mt0','mt1','mt2','mt3'], attribution: '© Google Maps' });
+  sat1    = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { maxZoom: 22, maxNativeZoom: 19, subdomains: ['mt0','mt1','mt2','mt3'], attribution: '© Google Maps' });
+  esri1   = L.tileLayer('https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', { maxZoom: 22, maxNativeZoom: 20, subdomains: ['mt0','mt1','mt2','mt3'], attribution: '© Google Maps' });
+  topo1   = L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { maxZoom: 22, maxNativeZoom: 19, subdomains: ['mt0','mt1','mt2','mt3'], attribution: '© Google Maps' });
 
-  // Same for Correction map
-  sat4     = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:22, maxNativeZoom:19, attribution:'© Esri', tileSize:256, zoomOffset:0});
-  labels4  = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {maxZoom:22, maxNativeZoom:20, attribution:'© CartoDB'});
-  street4  = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:22, maxNativeZoom:20, attribution:'© CartoDB © OSM'});
-  esri4    = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom:22, maxNativeZoom:19, attribution:'© Esri'});
-  topo4    = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom:22, maxNativeZoom:20, attribution:'© CartoDB'});
+  street4 = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 22, maxNativeZoom: 20, subdomains: ['mt0','mt1','mt2}&mt3'], attribution: '© Google Maps' });
+  sat4    = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { maxZoom: 22, maxNativeZoom: 19, subdomains: ['mt0','mt1','mt2','mt3'], attribution: '© Google Maps' });
+  esri4   = L.tileLayer('https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', { maxZoom: 22, maxNativeZoom: 20, subdomains: ['mt0','mt1','mt2','mt3'], attribution: '© Google Maps' });
+  topo4   = L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { maxZoom: 22, maxNativeZoom: 19, subdomains: ['mt0','mt1','mt2','mt3'], attribution: '© Google Maps' });
+  // ═════════════════════════════════════════════════════
 
   map1 = L.map('map1', {zoomControl:true, maxZoom:22}).setView([22.5, 88.3], 15);
   street1.addTo(map1);
@@ -1373,19 +1330,29 @@ function setGPSError(err) {
 function startTracking() {
   const rn = document.getElementById('attrRoadName').value.trim();
   if (!rn) { toast('⚠ Set Road Name in Road Info first'); switchPanel(2); return; }
+
+  const intervalInput = document.getElementById('autoIntervalInput');
+  let interval = parseFloat(intervalInput.value);
+  if (isNaN(interval) || interval < 1) interval = 1;
+  if (interval > 500) interval = 500;
+  intervalInput.value = interval;
+  autoIntervalM = interval;
+  intervalInput.disabled = true;
+
   document.getElementById('startBtn').disabled = true;
   document.getElementById('stopBtn').disabled = false;
   isTracking = true;
   setStatus('tracking', '🟢 Tracking active — walk along centerline');
   watchId = navigator.geolocation.watchPosition(handleAutoPoint, setGPSError,
     {enableHighAccuracy:true, timeout:8000, maximumAge:0});
-  toast('▶ GPS Tracking Started');
+  toast('▶ GPS Tracking Started — point every ' + autoIntervalM + ' m');
 }
 
 function stopTracking() {
   navigator.geolocation.clearWatch(watchId);
   document.getElementById('startBtn').disabled = false;
   document.getElementById('stopBtn').disabled = true;
+  document.getElementById('autoIntervalInput').disabled = false;
   isTracking = false;
   setStatus('standby', '⏹ Tracking stopped');
   saveSession();
@@ -1404,7 +1371,7 @@ function handleAutoPoint(pos) {
     const d = haversine(+last.lat, +last.lng, lat, lng);
 
     // Heading change detection — more points on curves
-    const minDist = (last.type === 'Route Point') ? 3 : 3;
+    const minDist = autoIntervalM;
     const heading = pos.coords.heading;
     const lastHeading = last.heading || null;
     let headingChange = 0;
@@ -1412,7 +1379,7 @@ function handleAutoPoint(pos) {
       headingChange = Math.abs(heading - lastHeading);
       if (headingChange > 180) headingChange = 360 - headingChange;
     }
-    const curveThreshold = headingChange > 15 ? 2 : minDist; // tighter on curves
+    const curveThreshold = headingChange > 15 ? Math.min(2, minDist) : minDist; // tighter on curves
     if (d < curveThreshold) return;
 
     totalDistance += d / 1000;
@@ -1609,16 +1576,16 @@ function setStatus(type, msg) {
 //  MAP CONTROLS
 // ══════════════════════════════════════════════════════
 function changeMapStyle(v) {
-  [sat1, labels1, street1, topo1, esri1].forEach(l => { if(l && map1.hasLayer(l)) map1.removeLayer(l); });
-  if (v === 'satellite') { sat1.addTo(map1); labels1.addTo(map1); }
+  [sat1, street1, topo1, esri1].forEach(l => { if(l && map1.hasLayer(l)) map1.removeLayer(l); });
+  if (v === 'satellite') { sat1.addTo(map1); }
   else if (v === 'esri') { esri1.addTo(map1); }
   else if (v === 'topo') { topo1.addTo(map1); }
   else { street1.addTo(map1); }
 }
 
 function changeMapStyle4(v) {
-  [sat4, labels4, street4, topo4, esri4].forEach(l => { if(l && map4.hasLayer(l)) map4.removeLayer(l); });
-  if (v === 'satellite') { sat4.addTo(map4); labels4.addTo(map4); }
+  [sat4, street4, topo4, esri4].forEach(l => { if(l && map4.hasLayer(l)) map4.removeLayer(l); });
+  if (v === 'satellite') { sat4.addTo(map4); }
   else if (v === 'esri') { esri4.addTo(map4); }
   else if (v === 'topo') { topo4.addTo(map4); }
   else { street4.addTo(map4); }
@@ -2315,129 +2282,9 @@ function clearSession() {
 }
 
 // ══════════════════════════════════════════════════════
-//  CORRECTION — SMART ADD POINT (insert after chosen point)
-// ══════════════════════════════════════════════════════
-let addPointModeActive = false;
-let deleteModeActive   = false;
-let lastAddedPointIdx  = -1;
-
-// Populate the "Insert After Point #" dropdown
-function refreshInsertDropdown() {
-  const sel = document.getElementById('insertAfterPt');
-  if (!sel) return;
-  sel.innerHTML = '<option value="end">— Append at End —</option>';
-  surveyData.forEach((r, i) => {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = `#${r.point} [${r.chainage||'0+000'}] ${r.type}`;
-    sel.appendChild(opt);
-  });
-}
-
-function toggleAddPointMode() {
-  if (deleteModeActive) toggleDeleteMode(); // cancel delete if active
-  addPointModeActive = !addPointModeActive;
-  const btn    = document.getElementById('addPtModeBtn');
-  const status = document.getElementById('addPtStatus');
-  if (addPointModeActive) {
-    btn.textContent = '🔴 Stop Adding';
-    btn.style.background = 'var(--red)';
-    status.style.display = 'block';
-    refreshInsertDropdown();
-    map4.on('click', handleMapAddPoint);
-    map4.getContainer().style.cursor = 'crosshair';
-  } else {
-    btn.textContent = '➕ Enable Click-to-Add';
-    btn.style.background = '';
-    status.style.display = 'none';
-    map4.off('click', handleMapAddPoint);
-    map4.getContainer().style.cursor = '';
-  }
-}
-
-function handleMapAddPoint(e) {
-  if (!addPointModeActive) return;
-  const lat = e.latlng.lat, lng = e.latlng.lng;
-  const ptype   = document.getElementById('newPtType').value;
-  const selVal  = document.getElementById('insertAfterPt').value;
-
-  // Determine insert position
-  let insertIdx; // index in surveyData AFTER which new point goes
-  if (selVal === 'end' || surveyData.length === 0) {
-    insertIdx = surveyData.length; // append
-  } else {
-    insertIdx = parseInt(selVal) + 1; // insert AFTER chosen point
-  }
-
-  // Compute chainage at insert position
-  let cumDist = 0;
-  for (let i = 1; i < Math.min(insertIdx, surveyData.length); i++) {
-    cumDist += haversine(+surveyData[i-1].lat, +surveyData[i-1].lng,
-                         +surveyData[i].lat,   +surveyData[i].lng) / 1000;
-  }
-  if (insertIdx > 0 && insertIdx <= surveyData.length) {
-    const prev = surveyData[insertIdx - 1];
-    cumDist += haversine(+prev.lat, +prev.lng, lat, lng) / 1000;
-  }
-
-  const ch = formatChainage(cumDist);
-  const pt = {
-    point: pointCounter++, lat: lat.toFixed(7), lng: lng.toFixed(7),
-    accuracy: '0.0', type: ptype, remarks: 'Added on map',
-    chainage: ch, heading: null, alt: null, ts: Date.now()
-  };
-
-  // Insert into array at correct position
-  surveyData.splice(insertIdx, 0, pt);
-  lastAddedPointIdx = insertIdx;
-
-  refreshPolylines();
-  saveSession();
-  activateCorrection(); // reload all draggable markers + click handlers
-  refreshInsertDropdown();
-  toast(`✅ ${ptype} inserted after point ${insertIdx} at Ch ${ch}`);
-  renderLog();
-}
-
-function undoLastAdded() {
-  if (lastAddedPointIdx < 0 || lastAddedPointIdx >= surveyData.length) { toast('⚠ Nothing to undo'); return; }
-  surveyData.splice(lastAddedPointIdx, 1);
-  pointCounter = Math.max(1, pointCounter - 1);
-  lastAddedPointIdx = -1;
-  refreshPolylines(); saveSession();
-  activateCorrection();
-  refreshInsertDropdown();
-  renderLog();
-  toast('↩ Last added point removed');
-}
-
-// ══════════════════════════════════════════════════════
-//  CORRECTION — CLICK-TO-DELETE
-// ══════════════════════════════════════════════════════
-function toggleDeleteMode() {
-  if (addPointModeActive) toggleAddPointMode(); // cancel add if active
-  deleteModeActive = !deleteModeActive;
-  const btn    = document.getElementById('deleteModeBtn');
-  const status = document.getElementById('deleteModeStatus');
-  if (deleteModeActive) {
-    btn.textContent = '🔴 Stop Deleting';
-    btn.style.background = 'var(--orange)';
-    status.style.display = 'block';
-    // Rebind markers with delete-click
-    activateCorrection(true);
-  } else {
-    btn.textContent = '🗑️ Enable Click-to-Delete';
-    btn.style.background = '';
-    status.style.display = 'none';
-    activateCorrection(false);
-  }
-}
-
-// ══════════════════════════════════════════════════════
 //  CORRECTION PANEL — core
 // ══════════════════════════════════════════════════════
-function activateCorrection(deleteMode) {
-  if (deleteMode === undefined) deleteMode = deleteModeActive;
+function activateCorrection() {
   correctionMarkers.forEach(m => corrMarkersLayer.removeLayer(m));
   correctionMarkers = [];
   let n = 0;
@@ -2448,37 +2295,23 @@ function activateCorrection(deleteMode) {
       : '#3b82f6';
     const sz = isSpecial ? 13 : 10;
     const m = L.marker([+node.lat, +node.lng], {
-      draggable: !deleteMode,
+      draggable: true,
       icon: L.divIcon({
-        html: `<div style="background:${col};width:${sz}px;height:${sz}px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.35);cursor:${deleteMode?'pointer':'grab'};"></div>`,
+        html: `<div style="background:${col};width:${sz}px;height:${sz}px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.35);cursor:grab;"></div>`,
         iconSize:[sz,sz], iconAnchor:[sz/2,sz/2]
       })
     }).addTo(corrMarkersLayer);
 
-    if (!deleteMode) {
-      m.on('dragend', () => {
-        const ll = m.getLatLng();
-        surveyData[idx].lat = ll.lat.toFixed(7);
-        surveyData[idx].lng = ll.lng.toFixed(7);
-        refreshPolylines(); saveSession();
-      });
-    } else {
-      m.on('click', () => {
-        if (!confirm(`Delete point #${node.point} [${node.chainage||'—'}] ${node.type}?`)) return;
-        surveyData.splice(idx, 1);
-        pointCounter = Math.max(1, pointCounter - 1);
-        refreshPolylines(); saveSession(); renderLog();
-        activateCorrection(true); // refresh
-        refreshInsertDropdown();
-        toast(`🗑 Point #${node.point} deleted`);
-      });
-    }
+    m.on('dragend', () => {
+      const ll = m.getLatLng();
+      surveyData[idx].lat = ll.lat.toFixed(7);
+      surveyData[idx].lng = ll.lng.toFixed(7);
+      refreshPolylines(); saveSession();
+    });
     correctionMarkers.push(m);
     n++;
   });
-  document.getElementById('corrStatus').textContent =
-    deleteMode ? `${n} points loaded — click any marker to delete`
-               : `${n} draggable points loaded. Drag to correct alignment.`;
+  document.getElementById('corrStatus').textContent = `${n} draggable points loaded. Drag to correct alignment.`;
   centerMap4();
 }
 let finalData = null; // locked copy of corrected data
